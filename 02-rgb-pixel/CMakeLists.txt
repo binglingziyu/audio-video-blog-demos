@@ -3,4 +3,4 @@ project(rgb-pixel C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(rgb-pixel main.c)
+add_executable(02-rgb-pixel main.c)
