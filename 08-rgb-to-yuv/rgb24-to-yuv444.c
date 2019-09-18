@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <string.h>
 
 // 彩虹的七种颜色
 u_int32_t rainbowColors[] = {
@@ -21,61 +22,51 @@ void rgbToYuv(u_int8_t R, u_int8_t G, u_int8_t B, int8_t *Y, int8_t *U, int8_t *
     *V = 0.439*R - 0.368*G - 0.071*B + 128;
 }
 
-void rgb24ToYuv444(char *yuvFileName, int width, int height) {
+void rgb24ToYuv444p(u_int8_t *rgb24Data, int8_t *yuv444pData, int width, int height) {
 
     int8_t yuv_y[width*height];
     int8_t yuv_u[width*height];
     int8_t yuv_v[width*height];
 
     for (int i = 0; i < width; ++i) {
-        // 当前颜色
-        u_int32_t currentColor = rainbowColors[0];
-        if(i < 100) {
-            currentColor = rainbowColors[0];
-        } else if(i < 200) {
-            currentColor = rainbowColors[1];
-        } else if(i < 300) {
-            currentColor = rainbowColors[2];
-        } else if(i < 400) {
-            currentColor = rainbowColors[3];
-        } else if(i < 500) {
-            currentColor = rainbowColors[4];
-        } else if(i < 600) {
-            currentColor = rainbowColors[5];
-        } else if(i < 700) {
-            currentColor = rainbowColors[6];
-        }
-        // 当前颜色 R 分量
-        u_int8_t R = (currentColor & 0xFF0000) >> 16;
-        // 当前颜色 G 分量
-        u_int8_t G = (currentColor & 0x00FF00) >> 8;
-        // 当前颜色 B 分量
-        u_int8_t B = currentColor & 0x0000FF;
-
         for (int j = 0; j < height; ++j) {
             int8_t Y, U, V;
+            u_int8_t R, G, B;
+
+            int currentRGBIndex = 3*(i*height+j);
+            R = rgb24Data[currentRGBIndex];
+            G = rgb24Data[currentRGBIndex+1];
+            B = rgb24Data[currentRGBIndex+2];
 
             rgbToYuv(R, G, B, &Y, &U, &V);
 
-            int currentIndex = i*height+j;
-            yuv_y[currentIndex] = Y;
-            yuv_u[currentIndex] = U;
-            yuv_v[currentIndex] = V;
-
+            int currentYUVIndex = i*height+j;
+            yuv_y[currentYUVIndex] = Y;
+            yuv_u[currentYUVIndex] = U;
+            yuv_v[currentYUVIndex] = V;
         }
     }
-
-    FILE *yuvFile = fopen(yuvFileName, "wb");
-
-    fwrite(yuv_y, sizeof(yuv_y), 1, yuvFile);
-    fwrite(yuv_u, sizeof(yuv_u), 1, yuvFile);
-    fwrite(yuv_v, sizeof(yuv_v), 1, yuvFile);
-
-    fclose(yuvFile);
+    
+    memcpy(yuv444pData, yuv_y, sizeof(yuv_y));
+    memcpy(yuv444pData + sizeof(yuv_y), yuv_u, sizeof(yuv_u));
+    memcpy(yuv444pData + sizeof(yuv_y) + sizeof(yuv_u), yuv_v, sizeof(yuv_v));
+    
 }
 
 int main() {
-    rgb24ToYuv444("/Users/hubin/Desktop/rainbow-700x700-yuv444p.yuv", 700, 700);
+    int width = 700, height = 700;
+    int8_t yuv444pData[width*height*3];
+    u_int8_t rgb24Data[width*height*3];
+    
+    FILE *rgb24File = fopen("/Users/hubin/Desktop/rainbow-rgb24.rgb", "rb");
+    fread(rgb24Data, sizeof(rgb24Data), 1, rgb24File);
+    
+    rgb24ToYuv444p(rgb24Data, yuv444pData, width, height);
 
+    FILE *yuv444pFile = fopen("/Users/hubin/Desktop/rainbow-rgb24-to-yuv444p.yuv", "wb");
+    fwrite(yuv444pData, sizeof(yuv444pData), 1, yuv444pFile);
+    
+    fclose(rgb24File);
+    fclose(yuv444pFile);
     return 0;
 }
