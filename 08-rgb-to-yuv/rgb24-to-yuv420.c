@@ -15,12 +15,6 @@ u_int32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
-//void rgbToYuv(u_int8_t R, u_int8_t G, u_int8_t B, int8_t *Y, int8_t *U, int8_t *V) {
-//    *Y = 0.257*R + 0.504*G + 0.098*B + 16;
-//    *U = -0.148*R - 0.291*G + 0.439*B + 128;
-//    *V = 0.439*R - 0.368*G - 0.071*B + 128;
-//}
-
 void genRGB24Data(u_int8_t *rgbData, int width, int height) {
 
     for (int i = 0; i < width; ++i) {
