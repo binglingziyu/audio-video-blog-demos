@@ -1,0 +1,3 @@
+[submodule "09-rgb-to-yuv-library/libyuv"]
+	path = 09-rgb-to-yuv-library/libyuv
+	url = git@github.com:lemenkov/libyuv.git
