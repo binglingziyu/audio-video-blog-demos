@@ -9,3 +9,4 @@ add_executable(09-rgb-to-yuv-with-libyuv rgb-to-yuv-with-libyuv.c ${LIBYUV_SRC})
 add_executable(09-yuv-to-rgb-with-libyuv yuv-to-rgb-with-libyuv.c ${LIBYUV_SRC})
 
 add_executable(09-rgb-to-yuv-with-descampsa rgb-to-yuv-with-descampsa-yuv2rgb.c descampsa/yuv2rgb/yuv_rgb.c)
+add_executable(09-yuv-to-rgb-with-descampsa yuv-to-rgb-with-descampsa-yuv2rgb.c descampsa/yuv2rgb/yuv_rgb.c)

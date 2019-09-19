@@ -32,7 +32,7 @@ int main() {
 
     rgb24ToYuv420p(RGB, YUV, width, height);
 
-    FILE *yuvFile = fopen("/Users/hubin/Desktop/rainbow-rgb24-to-yuv422p-descampsa.yuv", "wb");
+    FILE *yuvFile = fopen("/Users/hubin/Desktop/rainbow-rgb24-to-yuv420p-descampsa.yuv", "wb");
     fwrite(YUV, sizeof(YUV), 1, yuvFile);
 
     fclose(rgb24File);
