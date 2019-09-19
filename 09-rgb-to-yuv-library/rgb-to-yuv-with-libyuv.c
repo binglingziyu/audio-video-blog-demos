@@ -17,14 +17,15 @@ void libyuv_Rgb24_to_Yuv420p(char *rgbFileName, char *yuvFileName, int width, in
     fread(buffer_rgb, 1, size_rgb, rgb_file);
 
     // RGB to BGR
-    uint8_t temp;
-    for(int i = 0; i < size_rgb; i+=3) {
-        temp = buffer_rgb[i + 0];
-        buffer_rgb[i + 0] = buffer_rgb[i + 2];
-        buffer_rgb[i + 2] = temp;
-    }
+//    uint8_t temp;
+//    for(int i = 0; i < size_rgb; i+=3) {
+//        temp = buffer_rgb[i + 0];
+//        buffer_rgb[i + 0] = buffer_rgb[i + 2];
+//        buffer_rgb[i + 2] = temp;
+//    }
 
-    RGB24ToI420(
+//    RGB24ToI420(
+    RAWToI420(
             buffer_rgb, width*3,
             buffer_yuv, width,
             buffer_yuv + width*height, (width+1)/2,
