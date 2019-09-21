@@ -3,9 +3,10 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 
 // 彩虹的七种颜色
-u_int32_t rainbowColors[] = {
+uint32_t rainbowColors[] = {
         0XFF0000, // 赤
         0XFFA500, // 橙
         0XFFFF00, // 黄
@@ -86,16 +87,16 @@ void bitmap(int width, int height)
     for (int i = 0; i < width; ++i) {
 
         // 当前颜色
-        u_int32_t currentColor = rainbowColors[i];
+        uint32_t currentColor = rainbowColors[i];
 
         // 当前颜色 R 分量
-        u_int8_t R = (currentColor & 0xFF0000) >> 16;
+        uint8_t R = (currentColor & 0xFF0000) >> 16;
         // 当前颜色 G 分量
-        u_int8_t G = (currentColor & 0x00FF00) >> 8;
+        uint8_t G = (currentColor & 0x00FF00) >> 8;
         // 当前颜色 B 分量
-        u_int8_t B = currentColor & 0x0000FF;
+        uint8_t B = currentColor & 0x0000FF;
 
-        u_int8_t lineBytesArray[lineBytes];
+        uint8_t lineBytesArray[lineBytes];
 
         for (int j = 0; j < height; ++j) {
             int currentIndex = 3*j;

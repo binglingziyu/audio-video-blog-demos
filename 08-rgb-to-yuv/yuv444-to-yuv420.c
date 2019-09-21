@@ -3,11 +3,11 @@
 //
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 // 彩虹的七种颜色
-u_int32_t rainbowColors[] = {
+uint32_t rainbowColors[] = {
         0XFF0000, // 红
         0XFFA500, // 橙
         0XFFFF00, // 黄
@@ -17,13 +17,13 @@ u_int32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
-void rgbToYuv(u_int8_t R, u_int8_t G, u_int8_t B, int8_t *Y, int8_t *U, int8_t *V) {
+void rgbToYuv(uint8_t R, uint8_t G, uint8_t B, int8_t *Y, int8_t *U, int8_t *V) {
     *Y = 0.257*R + 0.504*G + 0.098*B + 16;
     *U = -0.148*R - 0.291*G + 0.439*B + 128;
     *V = 0.439*R - 0.368*G - 0.071*B + 128;
 }
 
-void rgb24ToYuv444(u_int8_t *outbuf, int width, int height) {
+void rgb24ToYuv444(uint8_t *outbuf, int width, int height) {
 
     int8_t yuv_y[width*height];
     int8_t yuv_u[width*height];
@@ -31,7 +31,7 @@ void rgb24ToYuv444(u_int8_t *outbuf, int width, int height) {
 
     for (int i = 0; i < width; ++i) {
         // 当前颜色
-        u_int32_t currentColor = rainbowColors[0];
+        uint32_t currentColor = rainbowColors[0];
         if(i < 100) {
             currentColor = rainbowColors[0];
         } else if(i < 200) {
@@ -48,11 +48,11 @@ void rgb24ToYuv444(u_int8_t *outbuf, int width, int height) {
             currentColor = rainbowColors[6];
         }
         // 当前颜色 R 分量
-        u_int8_t R = (currentColor & 0xFF0000) >> 16;
+        uint8_t R = (currentColor & 0xFF0000) >> 16;
         // 当前颜色 G 分量
-        u_int8_t G = (currentColor & 0x00FF00) >> 8;
+        uint8_t G = (currentColor & 0x00FF00) >> 8;
         // 当前颜色 B 分量
-        u_int8_t B = currentColor & 0x0000FF;
+        uint8_t B = currentColor & 0x0000FF;
 
         for (int j = 0; j < height; ++j) {
             int8_t Y, U, V;
@@ -73,9 +73,9 @@ void rgb24ToYuv444(u_int8_t *outbuf, int width, int height) {
 
 }
 
-void yuv444ToYuv420(u_int8_t *inbuf, u_int8_t *outbuf, int w, int h) {
-    u_int8_t *srcY = NULL, *srcU = NULL, *srcV = NULL;
-    u_int8_t *desY = NULL, *desU = NULL, *desV = NULL;
+void yuv444ToYuv420(uint8_t *inbuf, uint8_t *outbuf, int w, int h) {
+    uint8_t *srcY = NULL, *srcU = NULL, *srcV = NULL;
+    uint8_t *desY = NULL, *desU = NULL, *desV = NULL;
     srcY = inbuf;//Y
     srcU = srcY + w * h;//U
     srcV = srcU + w * h;//V
@@ -86,7 +86,7 @@ void yuv444ToYuv420(u_int8_t *inbuf, u_int8_t *outbuf, int w, int h) {
 
     int half_width = w / 2;
     int half_height = h / 2;
-    memcpy(desY, srcY, w * h * sizeof(u_int8_t));//Y分量直接拷贝即可
+    memcpy(desY, srcY, w * h * sizeof(uint8_t));//Y分量直接拷贝即可
     //UV
     for (int i = 0; i < half_height; i++) {
         for (int j = 0; j < half_width; j++) {
@@ -105,8 +105,8 @@ void yuv444ToYuv420(u_int8_t *inbuf, u_int8_t *outbuf, int w, int h) {
 int main() {
 
     int width = 700, height = 700;
-    u_int8_t yuv444pData[width*height*3];
-    u_int8_t yuv420pData[width*height*3/2];
+    uint8_t yuv444pData[width*height*3];
+    uint8_t yuv420pData[width*height*3/2];
     rgb24ToYuv444(yuv444pData, width, height);
     yuv444ToYuv420(yuv444pData, yuv420pData, width, height);
 

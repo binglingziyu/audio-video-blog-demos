@@ -2,13 +2,12 @@
 // Created by hubin on 2019/9/15.
 //
 
-
 #include "bitmap/bitmap_image.hpp"
 
 using namespace std;
 
 // 彩虹的七种颜色
-u_int32_t rainbowColors[] = {
+uint32_t rainbowColors[] = {
         0XFF0000, // 红
         0XFFA500, // 橙
         0XFFFF00, // 黄
@@ -27,7 +26,7 @@ int main() {
 
     for (int i = 0; i < width; ++i) {
         // 当前颜色
-        u_int32_t currentColor = rainbowColors[0];
+        uint32_t currentColor = rainbowColors[0];
         if(i < 100) {
             currentColor = rainbowColors[0];
         } else if(i < 200) {
@@ -44,11 +43,11 @@ int main() {
             currentColor = rainbowColors[6];
         }
         // 当前颜色 R 分量
-        u_int8_t R = (currentColor & 0xFF0000) >> 16;
+        uint8_t R = (currentColor & 0xFF0000) >> 16;
         // 当前颜色 G 分量
-        u_int8_t G = (currentColor & 0x00FF00) >> 8;
+        uint8_t G = (currentColor & 0x00FF00) >> 8;
         // 当前颜色 B 分量
-        u_int8_t B = currentColor & 0x0000FF;
+        uint8_t B = currentColor & 0x0000FF;
 
         for (int j = 0; j < height; ++j) {
             image.set_pixel(j, i, R, G, B);

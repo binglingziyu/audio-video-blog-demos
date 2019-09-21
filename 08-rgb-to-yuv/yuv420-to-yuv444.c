@@ -3,11 +3,12 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
-void yuv420ToYuv444(u_int8_t *inbuf, u_int8_t *outbuf, int w, int h) {
-    u_int8_t *srcY = NULL, *srcU = NULL, *srcV = NULL;
-    u_int8_t *desY = NULL, *desU = NULL, *desV = NULL;
+void yuv420ToYuv444(uint8_t *inbuf, uint8_t *outbuf, int w, int h) {
+    uint8_t *srcY = NULL, *srcU = NULL, *srcV = NULL;
+    uint8_t *desY = NULL, *desU = NULL, *desV = NULL;
     srcY = inbuf;//Y
     srcU = srcY + w * h;//U
     srcV = srcU + w * h / 4;;//V
@@ -15,7 +16,7 @@ void yuv420ToYuv444(u_int8_t *inbuf, u_int8_t *outbuf, int w, int h) {
     desY = outbuf;
     desU = desY + w * h;
     desV = desU + w * h;
-    memcpy(desY, srcY, w * h * sizeof(u_int8_t));//Y分量直接拷贝即可
+    memcpy(desY, srcY, w * h * sizeof(uint8_t));//Y分量直接拷贝即可
     //UV分量转换
     int i, j;
     for (i = 0; i < h; i += 2) {//行
@@ -36,8 +37,8 @@ void yuv420ToYuv444(u_int8_t *inbuf, u_int8_t *outbuf, int w, int h) {
 
 int main() {
     int width = 700, height = 700;
-    u_int8_t yuv444pData[width*height*3];
-    u_int8_t yuv420pData[width*height*3/2];
+    uint8_t yuv444pData[width*height*3];
+    uint8_t yuv420pData[width*height*3/2];
 
     FILE *yuv420File = fopen("/Users/hubin/Desktop/rainbow-700x700-yuv420p-yu12.yuv", "rb");
     fread(yuv420pData, sizeof(yuv420pData), 1, yuv420File);

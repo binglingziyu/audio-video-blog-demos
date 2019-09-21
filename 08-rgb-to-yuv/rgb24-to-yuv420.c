@@ -3,9 +3,10 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 
 // 彩虹的七种颜色
-u_int32_t rainbowColors[] = {
+uint32_t rainbowColors[] = {
         0XFF0000, // 红
         0XFFA500, // 橙
         0XFFFF00, // 黄
@@ -15,11 +16,11 @@ u_int32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
-void genRGB24Data(u_int8_t *rgbData, int width, int height) {
+void genRGB24Data(uint8_t *rgbData, int width, int height) {
 
     for (int i = 0; i < width; ++i) {
         // 当前颜色
-        u_int32_t currentColor = rainbowColors[0];
+        uint32_t currentColor = rainbowColors[0];
         if(i < 100) {
             currentColor = rainbowColors[0];
         } else if(i < 200) {
@@ -36,11 +37,11 @@ void genRGB24Data(u_int8_t *rgbData, int width, int height) {
             currentColor = rainbowColors[6];
         }
         // 当前颜色 R 分量
-        u_int8_t R = (currentColor & 0xFF0000) >> 16;
+        uint8_t R = (currentColor & 0xFF0000) >> 16;
         // 当前颜色 G 分量
-        u_int8_t G = (currentColor & 0x00FF00) >> 8;
+        uint8_t G = (currentColor & 0x00FF00) >> 8;
         // 当前颜色 B 分量
-        u_int8_t B = currentColor & 0x0000FF;
+        uint8_t B = currentColor & 0x0000FF;
 
         for (int j = 0; j < height; ++j) {
             int currentIndex = 3*(i*height+j);
@@ -52,7 +53,7 @@ void genRGB24Data(u_int8_t *rgbData, int width, int height) {
     
 }
 
-void rgb24ToYuv420p(u_int8_t *destination, u_int8_t *rgb, int width, int height) {
+void rgb24ToYuv420p(uint8_t *destination, uint8_t *rgb, int width, int height) {
     size_t image_size = width * height;
     size_t upos = image_size;
     size_t vpos = upos + upos / 4;
@@ -61,9 +62,9 @@ void rgb24ToYuv420p(u_int8_t *destination, u_int8_t *rgb, int width, int height)
     for( size_t line = 0; line < height; ++line ) {
         if( !(line % 2) ) {
             for( size_t x = 0; x < width; x += 2 ) {
-                u_int8_t r = rgb[3 * i];
-                u_int8_t g = rgb[3 * i + 1];
-                u_int8_t b = rgb[3 * i + 2];
+                uint8_t r = rgb[3 * i];
+                uint8_t g = rgb[3 * i + 1];
+                uint8_t b = rgb[3 * i + 2];
 
                 destination[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
 
@@ -78,9 +79,9 @@ void rgb24ToYuv420p(u_int8_t *destination, u_int8_t *rgb, int width, int height)
             }
         } else {
             for( size_t x = 0; x < width; x += 1 ) {
-                u_int8_t r = rgb[3 * i];
-                u_int8_t g = rgb[3 * i + 1];
-                u_int8_t b = rgb[3 * i + 2];
+                uint8_t r = rgb[3 * i];
+                uint8_t g = rgb[3 * i + 1];
+                uint8_t b = rgb[3 * i + 2];
 
                 destination[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
             }
@@ -90,8 +91,8 @@ void rgb24ToYuv420p(u_int8_t *destination, u_int8_t *rgb, int width, int height)
 
 int main() {
     int width = 700, height = 700;
-    u_int8_t rgb24Data[width*height*3];
-    u_int8_t yuv420pData[width*height*3/2];
+    uint8_t rgb24Data[width*height*3];
+    uint8_t yuv420pData[width*height*3/2];
     
     genRGB24Data(rgb24Data, width, height);
     rgb24ToYuv420p(yuv420pData, rgb24Data, width, height);

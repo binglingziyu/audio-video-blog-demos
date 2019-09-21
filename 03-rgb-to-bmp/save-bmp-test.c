@@ -3,9 +3,10 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 
 // 彩虹的七种颜色
-u_int32_t rainbowColors[] = {
+uint32_t rainbowColors[] = {
         0XFF0000, // 赤
         0XFFA500, // 橙
         0XFFFF00, // 黄
@@ -15,13 +16,13 @@ u_int32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
-u_int8_t* getRainbowRGB24Data(int width, int height) {
+uint8_t* getRainbowRGB24Data(int width, int height) {
     // 打开文件
-    u_int8_t rgb24Data[width*height*3];
+    uint8_t rgb24Data[width*height*3];
     for (int i = 0; i < width; ++i) {
 
         // 当前颜色
-        u_int32_t currentColor = rainbowColors[0];
+        uint32_t currentColor = rainbowColors[0];
         if(i < 100) {
             currentColor = rainbowColors[0];
         } else if(i < 200) {
@@ -38,11 +39,11 @@ u_int8_t* getRainbowRGB24Data(int width, int height) {
             currentColor = rainbowColors[6];
         }
         // 当前颜色 R 分量
-        u_int8_t R = (currentColor & 0xFF0000) >> 16;
+        uint8_t R = (currentColor & 0xFF0000) >> 16;
         // 当前颜色 G 分量
-        u_int8_t G = (currentColor & 0x00FF00) >> 8;
+        uint8_t G = (currentColor & 0x00FF00) >> 8;
         // 当前颜色 B 分量
-        u_int8_t B = currentColor & 0x0000FF;
+        uint8_t B = currentColor & 0x0000FF;
 
         for (int j = 0; j < height; ++j) {
             int currentPixelIndex = 3*(i*height + j);
@@ -117,7 +118,7 @@ void bitmap(int width, int height)
     for (int i = 0; i < width; ++i) {
 
         // 当前颜色
-        u_int32_t currentColor = rainbowColors[0];
+        uint32_t currentColor = rainbowColors[0];
         if(i < 100) {
             currentColor = rainbowColors[0];
         } else if(i < 200) {
@@ -134,11 +135,11 @@ void bitmap(int width, int height)
             currentColor = rainbowColors[6];
         }
         // 当前颜色 R 分量
-        u_int8_t R = (currentColor & 0xFF0000) >> 16;
+        uint8_t R = (currentColor & 0xFF0000) >> 16;
         // 当前颜色 G 分量
-        u_int8_t G = (currentColor & 0x00FF00) >> 8;
+        uint8_t G = (currentColor & 0x00FF00) >> 8;
         // 当前颜色 B 分量
-        u_int8_t B = currentColor & 0x0000FF;
+        uint8_t B = currentColor & 0x0000FF;
 
         for (int j = 0; j < height; ++j) {
             int currentPixelIndex = 3*(i*height + j);

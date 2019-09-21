@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 #include "libyuv.h"
 
 void libyuv_I444_to_Rgb(char *srcFileName, char *dstFileName, int width, int height) {
@@ -16,10 +17,10 @@ void libyuv_I444_to_Rgb(char *srcFileName, char *dstFileName, int width, int hei
 
     fread(buffer_src, 1, size_src, src_file);
 
-    I444ToARGB((const u_int8_t*)buffer_src, width,
-                           (const u_int8_t*)(buffer_src + width * height), width,
-                           (const u_int8_t*)(buffer_src + 2 * width * height), width,
-                           (u_int8_t*)buffer_dest, width * 4,
+    I444ToARGB((const uint8_t*)buffer_src, width,
+                           (const uint8_t*)(buffer_src + width * height), width,
+                           (const uint8_t*)(buffer_src + 2 * width * height), width,
+                           (uint8_t*)buffer_dest, width * 4,
                            width, height);
 
     fwrite(buffer_dest, 1, size_dest, dst_file);

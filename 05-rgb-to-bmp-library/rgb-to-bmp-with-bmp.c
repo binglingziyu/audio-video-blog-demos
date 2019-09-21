@@ -3,10 +3,11 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 #include "bmp/bmp.h"
 
 // 彩虹的七种颜色
-u_int32_t rainbowColors[] = {
+uint32_t rainbowColors[] = {
         0XFF0000, // 红
         0XFFA500, // 橙
         0XFFFF00, // 黄
@@ -25,7 +26,7 @@ int main() {
     for (int i = 0; i < width; ++i) {
 
         // 当前颜色
-        u_int32_t currentColor = rainbowColors[0];
+        uint32_t currentColor = rainbowColors[0];
         if(i < 100) {
             currentColor = rainbowColors[0];
         } else if(i < 200) {

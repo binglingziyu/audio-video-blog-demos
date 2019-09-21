@@ -3,11 +3,12 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 
 // 彩虹的七种颜色
-u_int32_t rainbowColors[] = {
+uint32_t rainbowColors[] = {
         0XFF0000, // 红
         0XFFA500, // 橙
         0XFFFF00, // 黄
@@ -17,7 +18,7 @@ u_int32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
-u_int8_t bound(u_int8_t start, int value, u_int8_t end) {
+uint8_t bound(uint8_t start, int value, uint8_t end) {
     if(value <= start) {
         return start;
     }
@@ -30,7 +31,7 @@ u_int8_t bound(u_int8_t start, int value, u_int8_t end) {
 // Y = 0.257*R + 0.504*G + 0.098*B + 16;
 // U = -0.148*R - 0.291*G + 0.439*B + 128;
 // V = 0.439*R - 0.368*G - 0.071*B + 128;
-void rgbToYuv(u_int8_t R, u_int8_t G, u_int8_t B, u_int8_t *Y, u_int8_t *U, u_int8_t *V) {
+void rgbToYuv(uint8_t R, uint8_t G, uint8_t B, uint8_t *Y, uint8_t *U, uint8_t *V) {
     int y_val = (int)round(0.257*R + 0.504*G + 0.098*B + 16);
     int u_val = (int)round(-0.148*R - 0.291*G + 0.439*B + 128);
     int v_val = (int)round(0.439*R - 0.368*G - 0.071*B + 128);
@@ -40,7 +41,7 @@ void rgbToYuv(u_int8_t R, u_int8_t G, u_int8_t B, u_int8_t *Y, u_int8_t *U, u_in
 }
 
 
-void rgb24ToYuv444p(const u_int8_t *rgb24Data, u_int8_t *yuv444pData, int width, int height) {
+void rgb24ToYuv444p(const uint8_t *rgb24Data, uint8_t *yuv444pData, int width, int height) {
 
     int8_t yuv_y[width*height];
     int8_t yuv_u[width*height];
@@ -48,8 +49,8 @@ void rgb24ToYuv444p(const u_int8_t *rgb24Data, u_int8_t *yuv444pData, int width,
 
     for (int i = 0; i < width; ++i) {
         for (int j = 0; j < height; ++j) {
-            u_int8_t Y, U, V;
-            u_int8_t R, G, B;
+            uint8_t Y, U, V;
+            uint8_t R, G, B;
 
             int currentRGBIndex = 3*(i*height+j);
             R = rgb24Data[currentRGBIndex];
@@ -73,8 +74,8 @@ void rgb24ToYuv444p(const u_int8_t *rgb24Data, u_int8_t *yuv444pData, int width,
 
 int main() {
     int width = 700, height = 700;
-    u_int8_t yuv444pData[width*height*3];
-    u_int8_t rgb24Data[width*height*3];
+    uint8_t yuv444pData[width*height*3];
+    uint8_t rgb24Data[width*height*3];
     
     FILE *rgb24File = fopen("/Users/hubin/Desktop/rainbow-rgb24.rgb", "rb");
     fread(rgb24Data, sizeof(rgb24Data), 1, rgb24File);
