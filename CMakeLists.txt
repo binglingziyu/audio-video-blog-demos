@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(image_demo)
+project(image-demo-rgb-pixel)
 
 add_subdirectory(02-rgb-pixel)
 add_subdirectory(03-rgb-to-bmp)
@@ -11,3 +11,4 @@ add_subdirectory(06-drawing-time-cpp)
 add_subdirectory(08-rgb-to-yuv)
 add_subdirectory(09-rgb-to-yuv-library)
 add_subdirectory(10-yuv-conversion-libyuv)
+add_subdirectory(11-rgb-to-png)
