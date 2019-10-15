@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <i386/endian.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include "zlib.h"
@@ -14,6 +14,7 @@ void genRGB24Data(uint8_t *rgbData, int width, int height);
 
 void make_crc32_table();
 uint32_t make_crc(uint32_t crc, int8_t *data, uint32_t size);
+uint32_t switchUint32(uint32_t i);
 
 uint8_t pngFileType[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
 uint8_t IEND[] = {0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82};
@@ -30,11 +31,17 @@ typedef struct {
 
 int main() {
     int width = 700, height = 700;
-    uint8_t rgb24Data[width*height*3];
-    uint32_t calcuCrc = 0xffffffff;
+//    uint8_t rgb24Data[width*height*3];
+    uint8_t *rgb24Data = (uint8_t *)malloc(width*height*3+width);
+//    uint8_t *rgb24Data = (uint8_t *)malloc(width*height*3);
 
-    FILE *file = fopen("/Users/hubin/Desktop/0.png", "wb");
+    // FILE *file = fopen("/Users/hubin/Desktop/0.png", "wb");
+     FILE *file = fopen("C:\\Users\\Administrator\\Desktop\\0.png", "wb+");
 
+    if (!file) {
+        printf("Could not write file\n");
+        return -1;
+    }
     // 填充 RGB 数据
     genRGB24Data(rgb24Data, width, height);
 
@@ -46,17 +53,17 @@ int main() {
     fwrite(pngFileType, 1, sizeof(pngFileType), file);
 
     PNGFILEHEADER pngfileheader;
-    pngfileheader.width = htonl(width);
-    pngfileheader.height = htonl(height);
+    pngfileheader.width = switchUint32(width);
+    pngfileheader.height = switchUint32(height);
     pngfileheader.bitDepth = 8;
-    pngfileheader.colorType = 6;
+    pngfileheader.colorType = 2;// 2：真彩色图像，8或16    6：带α通道数据的真彩色图像，8或16
     pngfileheader.compressionMethod = 0;
     pngfileheader.filterMethod = 0;
     pngfileheader.interlaceMethod = 0;
 
-    uint32_t pngfileheaderSize = htonl(0x0000000D);
-    uint32_t pngfileheaderTmp = htonl(0x49484452);
-    uint32_t pngfileheaderCrc32 = htonl(0x0DBA6C43);
+    uint32_t pngfileheaderSize = switchUint32(0x0000000D);
+    uint32_t pngfileheaderTmp = switchUint32(0x49484452);
+    uint32_t pngfileheaderCrc32 = switchUint32(0x0DBA6C43);
 
     printf("\n文件头：%ld\n", sizeof(PNGFILEHEADER));
     printf("uint32_t: %ld\n", sizeof(uint32_t));
@@ -75,15 +82,16 @@ int main() {
     // unsigned char strsrc[]="这些是测试数据。123456789 abcdefghigklmnopqrstuvwxyz\n\tabcdefghijklmnopqrstuvwxyz\n"; //包含\0字符
     unsigned char buf[1470000]={0};
     //unsigned char strdst[1024]={0};
-    uint32_t srclen=sizeof(rgb24Data);
+    uint32_t srclen=width*height*3+width;
+//    uint32_t srclen=width*height*3;
     uint32_t buflen=sizeof(buf);
     //unsigned long dstlen=sizeof(strdst);
 
     compress(buf, &buflen, rgb24Data, srclen);
-    printf("压缩后实际长度为:%ld\n", buflen);
+    printf("压缩后实际长度为:%d\n", buflen);
 
 
-    uint32_t tmpBuflen = htonl(buflen);
+    uint32_t tmpBuflen = switchUint32(buflen);
     uint8_t IDAT[] = {0x49, 0x44, 0x41, 0x54};
     fwrite(&tmpBuflen, 1, sizeof(tmpBuflen), file);
     fwrite(IDAT, 1, sizeof(IDAT), file);

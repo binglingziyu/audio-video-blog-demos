@@ -64,8 +64,11 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
         // 当前颜色 B 分量
         uint8_t B = currentColor & 0x0000FF;
 
+        rgbData[3*(i*height)+i] = 0x00;
+
         for (int j = 0; j < height; ++j) {
-            int currentIndex = 3*(i*height+j);
+            int currentIndex = 3*(i*height+j)+(i+1);
+//            int currentIndex = 3*(i*height+j);
             rgbData[currentIndex] = R;
             rgbData[currentIndex+1] = G;
             rgbData[currentIndex+2] = B;
@@ -108,4 +111,14 @@ bool IsBigEndianOrder() {
     char *pChar = (char*)(&iVal);
     if(*pChar==1) return false; //(0x01000000) Windows 采用的是小端法
     else return true; //(0x00000001)  Aix采用的是大端法
+}
+
+// 16bit大小端转换
+uint16_t switchUint16(uint16_t s) {
+    return ((s & 0x00FF) << 8) | ((s & 0xFF00) >> 8);
+}
+
+// 32bit大小端转换
+uint32_t switchUint32(uint32_t i) {
+    return ((i & 0x000000FF) << 24) | ((i & 0x0000FF00) << 8) | ((i & 0x00FF0000) >> 8) | ((i & 0xFF000000) >> 24);
 }
