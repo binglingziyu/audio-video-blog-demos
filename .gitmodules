@@ -4,3 +4,6 @@
 [submodule "09-rgb-to-yuv-library/descampsa/yuv2rgb"]
 	path = 09-rgb-to-yuv-library/descampsa/yuv2rgb
 	url = git@github.com:descampsa/yuv2rgb.git
+[submodule "11-rgb-to-png/zlib"]
+	path = 11-rgb-to-png/zlib
+	url = https://github.com/madler/zlib

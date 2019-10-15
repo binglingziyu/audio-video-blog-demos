@@ -3,26 +3,27 @@
 //
 
 #include <stdint.h>
+#include <stdbool.h>
 
-const uint32_t MOD_ADLER = 65521;
-uint32_t adler32(unsigned char *data, uint32_t len)
-/*
-    where data is the location of the data in physical memory and
-    len is the length of the data in bytes
-*/
-{
-    uint32_t a = 1, b = 0;
-    uint32_t index;
-
-    // Process each byte of the data in order
-    for (index = 0; index < len; ++index)
-    {
-        a = (a + data[index]) % MOD_ADLER;
-        b = (b + a) % MOD_ADLER;
-    }
-
-    return (b << 16) | a;
-}
+//const uint32_t MOD_ADLER = 65521;
+//uint32_t adler32(unsigned char *data, uint32_t len)
+///*
+//    where data is the location of the data in physical memory and
+//    len is the length of the data in bytes
+//*/
+//{
+//    uint32_t a = 1, b = 0;
+//    uint32_t index;
+//
+//    // Process each byte of the data in order
+//    for (index = 0; index < len; ++index)
+//    {
+//        a = (a + data[index]) % MOD_ADLER;
+//        b = (b + a) % MOD_ADLER;
+//    }
+//
+//    return (b << 16) | a;
+//}
 
 
 // 彩虹的七种颜色
@@ -99,4 +100,12 @@ uint32_t make_crc(uint32_t crc, uint8_t *data, uint32_t size) {
     while(size--)
         crc = (crc >> 8)^(crc32_table[(crc ^ *data++)&0xff]);
     return crc;
+}
+
+
+bool IsBigEndianOrder() {
+    int iVal = 1;
+    char *pChar = (char*)(&iVal);
+    if(*pChar==1) return false; //(0x01000000) Windows 采用的是小端法
+    else return true; //(0x00000001)  Aix采用的是大端法
 }

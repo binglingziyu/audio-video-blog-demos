@@ -2,4 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(10-rgb-to-png rgb-to-png.c util.c)
+aux_source_directory(zlib ZLIB_SRC)
+include_directories(zlib)
+
+add_executable(11-rgb-to-png rgb-to-png.c util.c ${ZLIB_SRC})
