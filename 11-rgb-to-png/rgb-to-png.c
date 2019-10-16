@@ -11,9 +11,6 @@
 
 bool IsBigEndianOrder();
 void genRGB24Data(uint8_t *rgbData, int width, int height);
-
-void make_crc32_table();
-uint32_t make_crc(uint32_t crc, int8_t *data, uint32_t size);
 uint32_t switchUint32(uint32_t i);
 
 uint8_t pngFileType[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
@@ -31,12 +28,10 @@ typedef struct {
 
 int main() {
     int width = 700, height = 700;
-//    uint8_t rgb24Data[width*height*3];
     uint8_t *rgb24Data = (uint8_t *)malloc(width*height*3+width);
-//    uint8_t *rgb24Data = (uint8_t *)malloc(width*height*3);
 
-    // FILE *file = fopen("/Users/hubin/Desktop/0.png", "wb");
-     FILE *file = fopen("C:\\Users\\Administrator\\Desktop\\0.png", "wb+");
+     FILE *file = fopen("/Users/hubin/Desktop/0.png", "wb");
+//     FILE *file = fopen("C:\\Users\\Administrator\\Desktop\\0.png", "wb+");
 
     if (!file) {
         printf("Could not write file\n");
@@ -44,10 +39,6 @@ int main() {
     }
     // 填充 RGB 数据
     genRGB24Data(rgb24Data, width, height);
-
-    // 计算 crc32
-    // make_crc32_table();
-    // calcuCrc = make_crc(calcuCrc, rgb24Data, sizeof(rgb24Data));
 
     // 写文件标识
     fwrite(pngFileType, 1, sizeof(pngFileType), file);
@@ -63,7 +54,7 @@ int main() {
 
     uint32_t pngfileheaderSize = switchUint32(0x0000000D);
     uint32_t pngfileheaderTmp = switchUint32(0x49484452);
-    uint32_t pngfileheaderCrc32 = switchUint32(0x0DBA6C43);
+    uint32_t pngfileheaderCrc32 = 0;//switchUint32(0x0DBA6C43);
 
     printf("\n文件头：%ld\n", sizeof(PNGFILEHEADER));
     printf("uint32_t: %ld\n", sizeof(uint32_t));
@@ -72,6 +63,12 @@ int main() {
     fwrite(&pngfileheaderTmp, 1, sizeof(pngfileheaderTmp), file);
     // 写入文件头
     fwrite(&pngfileheader, 1, 13/*sizeof(pngfileheader)*/, file);
+
+    uint8_t headerBuffer[13+4];
+    memcpy(headerBuffer, &pngfileheaderTmp, 4);
+    memcpy(headerBuffer + 4, &pngfileheader, 13);
+    pngfileheaderCrc32 = crc32(pngfileheaderCrc32, headerBuffer, 13+4);
+    pngfileheaderCrc32 = switchUint32(pngfileheaderCrc32);
     fwrite(&pngfileheaderCrc32, 1, sizeof(pngfileheaderCrc32), file);
 
 
@@ -113,6 +110,9 @@ int main() {
     memcpy(unionBuffer + sizeof(IDAT), buf, buflen);
 
     idatCrc32 = crc32(idatCrc32, unionBuffer, buflen+4);
+    printf("crc32=%x\n", idatCrc32);
+    idatCrc32 = switchUint32(idatCrc32);
+    printf("crc32=%x\n", idatCrc32);
     // TODO CRC32
     fwrite(&idatCrc32, 1, sizeof(idatCrc32), file);
 
@@ -126,6 +126,9 @@ int main() {
     } else {
         printf("小端字节序");
     }
+
+    free(rgb24Data);
+    fclose(file);
 
     return 0;
 }
