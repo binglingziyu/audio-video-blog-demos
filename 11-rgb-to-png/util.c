@@ -37,6 +37,54 @@ uint32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
+void genRGBPLTE(uint8_t *rgbData) {
+    for (int i = 0; i < 7; ++i) {
+        uint32_t currentColor = rainbowColors[i];
+        // 当前颜色 R 分量
+        uint8_t R = (currentColor & 0xFF0000) >> 16;
+        // 当前颜色 G 分量
+        uint8_t G = (currentColor & 0x00FF00) >> 8;
+        // 当前颜色 B 分量
+        uint8_t B = currentColor & 0x0000FF;
+
+        int currentIndex = 3*i;
+        rgbData[currentIndex] = R;
+        rgbData[currentIndex+1] = G;
+        rgbData[currentIndex+2] = B;
+    }
+}
+
+void genRGBIndexData(uint8_t *rgbIndexData, int width, int height) {
+    for (int i = 0; i < width; ++i) {
+        uint8_t currentColorIndex = 0;
+        if(i < 100) {
+            currentColorIndex = 0;
+        } else if(i < 200) {
+            currentColorIndex = 1;
+        } else if(i < 300) {
+            currentColorIndex = 2;
+        } else if(i < 400) {
+            currentColorIndex = 3;
+        } else if(i < 500) {
+            currentColorIndex = 4;
+        } else if(i < 600) {
+            currentColorIndex = 5;
+        } else if(i < 700) {
+            currentColorIndex = 6;
+        }
+        rgbIndexData[i*width+i] = 0x00;
+        for (int j = 0; j < height; ++j) {
+            int currentIndex = (i*width+j)/2+(i+1);
+            int currentIndexPos = (i*width+j)%2+(i+1);
+            if(currentIndexPos == 0) {
+                rgbIndexData[currentIndex] = currentColorIndex << 4;
+            } else {
+                rgbIndexData[currentIndex] += currentColorIndex;
+            }
+        }
+    }
+}
+
 void genRGB24Data(uint8_t *rgbData, int width, int height) {
 
     for (int i = 0; i < width; ++i) {

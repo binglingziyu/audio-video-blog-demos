@@ -1,6 +1,8 @@
 # 目录
 
-[音视频入门-02-RGB拼图](https://www.ihubin.com/blog/audio-video-basic-02-rgb-puzzle/)
+[音视频入门-01-认识 RGB](https://www.ihubin.com/blog/audio-video-basic-01-rgb-intro/)
+
+[音视频入门-02-RGB拼图](https://www.ihubin.com/blog/audio-video-basic-02-rgb-puzzle)
 
 [音视频入门-03-RGB转成BMP图片](https://www.ihubin.com/blog/audio-video-basic-03-rgb-to-bmp/)
 
@@ -10,4 +12,12 @@
 
 [音视频入门-06-代码画图时间](https://www.ihubin.com/blog/audio-video-basic-06-code-drawing/)
 
-[音视频入门-08-RGB&YUV]()
+[音视频入门-07-认识YUV](https://www.ihubin.com/blog/audio-video-basic-07-yuv-intro/)
+
+[音视频入门-08-RGB&YUV](https://www.ihubin.com/blog/audio-video-basic-08-rgb-and-yuv/)
+
+[音视频入门-09-RGB&YUV互转-使用开源库](https://www.ihubin.com/blog/audio-video-basic-09-rgb-and-yuv-library/)
+
+[音视频入门-10-使用libyuv对YUV数据进行缩放、旋转、镜像、裁剪、混合](https://www.ihubin.com/blog/audio-video-basic-10-libyuv-usage/)
+
+[音视频入门-11-PNG文件格式详解](https://www.ihubin.com/blog/audio-video-basic-11-png-file-format-detail/)

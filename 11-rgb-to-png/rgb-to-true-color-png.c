@@ -30,8 +30,8 @@ int main() {
     int width = 700, height = 700;
     uint8_t *rgb24Data = (uint8_t *)malloc(width*height*3+width);
 
-     FILE *file = fopen("/Users/hubin/Desktop/0.png", "wb");
-//     FILE *file = fopen("C:\\Users\\Administrator\\Desktop\\0.png", "wb+");
+     FILE *file = fopen("/Users/hubin/Desktop/0-true-color.png", "wb");
+//     FILE *file = fopen("C:\\Users\\Administrator\\Desktop\\0-true-color.png", "wb+");
 
     if (!file) {
         printf("Could not write file\n");
