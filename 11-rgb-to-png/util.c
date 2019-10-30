@@ -4,27 +4,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
-//const uint32_t MOD_ADLER = 65521;
-//uint32_t adler32(unsigned char *data, uint32_t len)
-///*
-//    where data is the location of the data in physical memory and
-//    len is the length of the data in bytes
-//*/
-//{
-//    uint32_t a = 1, b = 0;
-//    uint32_t index;
-//
-//    // Process each byte of the data in order
-//    for (index = 0; index < len; ++index)
-//    {
-//        a = (a + data[index]) % MOD_ADLER;
-//        b = (b + a) % MOD_ADLER;
-//    }
-//
-//    return (b << 16) | a;
-//}
-
+#include <string.h>
+#include "zlib.h"
 
 // 彩虹的七种颜色
 uint32_t rainbowColors[] = {
@@ -37,7 +18,11 @@ uint32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
-void genRGBPLTE(uint8_t *rgbData) {
+/**
+ * 生成索引 PNG 图片的调色板 PLTE
+ * @param rgbPLTEData
+ */
+void genRGBPLTE(uint8_t *rgbPLTEData) {
     for (int i = 0; i < 7; ++i) {
         uint32_t currentColor = rainbowColors[i];
         // 当前颜色 R 分量
@@ -48,14 +33,20 @@ void genRGBPLTE(uint8_t *rgbData) {
         uint8_t B = currentColor & 0x0000FF;
 
         int currentIndex = 3*i;
-        rgbData[currentIndex] = R;
-        rgbData[currentIndex+1] = G;
-        rgbData[currentIndex+2] = B;
+        rgbPLTEData[currentIndex] = R;
+        rgbPLTEData[currentIndex+1] = G;
+        rgbPLTEData[currentIndex+2] = B;
     }
 }
 
+/**
+ * 生成索引 PNG 图片的图像数据块 IDAT
+ * @param rgbIndexData
+ * @param width
+ * @param height
+ */
 void genRGBIndexData(uint8_t *rgbIndexData, int width, int height) {
-    for (int i = 0; i < width; ++i) {
+    for (int i = 0; i < height; ++i) {
         uint8_t currentColorIndex = 0;
         if(i < 100) {
             currentColorIndex = 0;
@@ -72,11 +63,12 @@ void genRGBIndexData(uint8_t *rgbIndexData, int width, int height) {
         } else if(i < 700) {
             currentColorIndex = 6;
         }
-        rgbIndexData[i*width+i] = 0x00;
-        for (int j = 0; j < height; ++j) {
+        // 每个扫描行前第一个字节是过滤器类型
+        rgbIndexData[(i*width)/2+i] = 0x00;
+        for (int j = 0; j < width; ++j) {
             int currentIndex = (i*width+j)/2+(i+1);
-            int currentIndexPos = (i*width+j)%2+(i+1);
-            if(currentIndexPos == 0) {
+            int positionInByte = j%2;
+            if(positionInByte == 0) {
                 rgbIndexData[currentIndex] = currentColorIndex << 4;
             } else {
                 rgbIndexData[currentIndex] += currentColorIndex;
@@ -112,11 +104,11 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
         // 当前颜色 B 分量
         uint8_t B = currentColor & 0x0000FF;
 
+        // 每个扫描行前第一个字节是过滤器类型
         rgbData[3*(i*height)+i] = 0x00;
 
         for (int j = 0; j < height; ++j) {
             int currentIndex = 3*(i*height+j)+(i+1);
-//            int currentIndex = 3*(i*height+j);
             rgbData[currentIndex] = R;
             rgbData[currentIndex+1] = G;
             rgbData[currentIndex+2] = B;
@@ -124,49 +116,47 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
     }
 }
 
-
-uint32_t crc32_table[256];
-
-void make_crc32_table() {
-    uint32_t c;
-    int i = 0;
-    int bit = 0;
-
-    for(i = 0; i < 256; i++) {
-        c  = (uint32_t)i;
-
-        for(bit = 0; bit < 8; bit++) {
-            if(c&1) {
-                c = (c >> 1)^(0xEDB88320);
-            } else {
-                c =  c >> 1;
-            }
-
-        }
-        crc32_table[i] = c;
-    }
-}
-
-uint32_t make_crc(uint32_t crc, uint8_t *data, uint32_t size) {
-    while(size--)
-        crc = (crc >> 8)^(crc32_table[(crc ^ *data++)&0xff]);
-    return crc;
-}
-
-
-bool IsBigEndianOrder() {
+/**
+ * 判断是 大端字节序 OR 小端字节序
+ * @return
+ */
+bool isBigEndianOrder() {
     int iVal = 1;
     char *pChar = (char*)(&iVal);
     if(*pChar==1) return false; //(0x01000000) Windows 采用的是小端法
     else return true; //(0x00000001)  Aix采用的是大端法
 }
 
-// 16bit大小端转换
+/**
+ * 16 位字节序转换
+ * @param s
+ * @return
+ */
 uint16_t switchUint16(uint16_t s) {
     return ((s & 0x00FF) << 8) | ((s & 0xFF00) >> 8);
 }
 
-// 32bit大小端转换
+/**
+ * 32 位字节序转换
+ * @param i
+ * @return
+ */
 uint32_t switchUint32(uint32_t i) {
     return ((i & 0x000000FF) << 24) | ((i & 0x0000FF00) << 8) | ((i & 0x00FF0000) >> 8) | ((i & 0xFF000000) >> 24);
+}
+
+/**
+ * 计算数据块 CRC32
+ * @param dataASCII
+ * @param data
+ * @param dataLength
+ * @return
+ */
+uint32_t calcCrc32(uint32_t dataASCII, uint8_t *data, uint32_t dataLength) {
+    uint8_t dataBuffer[4+dataLength];
+    memcpy(dataBuffer, &dataASCII, 4);
+    memcpy(dataBuffer + 4, data, dataLength);
+    uint32_t crc32Value = 0;
+    crc32Value = crc32(crc32Value, dataBuffer, 4+dataLength);
+    return switchUint32(crc32Value);
 }
