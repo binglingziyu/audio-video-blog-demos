@@ -79,7 +79,7 @@ void genRGBIndexData(uint8_t *rgbIndexData, int width, int height) {
 
 void genRGB24Data(uint8_t *rgbData, int width, int height) {
 
-    for (int i = 0; i < width; ++i) {
+    for (int i = 0; i < height; ++i) {
         // 当前颜色
         uint32_t currentColor = rainbowColors[0];
         if(i < 100) {
@@ -105,10 +105,10 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
         uint8_t B = currentColor & 0x0000FF;
 
         // 每个扫描行前第一个字节是过滤器类型
-        rgbData[3*(i*height)+i] = 0x00;
+        rgbData[3*(i*width)+i] = 0x00;
 
-        for (int j = 0; j < height; ++j) {
-            int currentIndex = 3*(i*height+j)+(i+1);
+        for (int j = 0; j < width; ++j) {
+            int currentIndex = 3*(i*width+j)+(i+1);
             rgbData[currentIndex] = R;
             rgbData[currentIndex+1] = G;
             rgbData[currentIndex+2] = B;

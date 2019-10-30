@@ -34,8 +34,6 @@ int main() {
     uint8_t PNG_FILE_SIGNATURE[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
     // IHDR 每个字母对应的 ASCII
     uint32_t IHDR_ASCII = switchUint32(0x49484452);
-    // PLTE 每个字母对应的ASCII
-    uint32_t PLTE_ASCII = switchUint32(0x504C5445);
     // IDAT 每个字母对应的ASCII
     uint32_t IDAT_ASCII = switchUint32(0x49444154);
     // PNG 文件的结尾 12 个字节看起来总应该是这样的：（00 00 00 00 49 45 4E 44 AE 42 60 82，十六进制）
@@ -47,7 +45,7 @@ int main() {
         printf("Could not write file\n");
         return -1;
     }
-    
+
     // 真彩 PNG 图片 存储的是 RGB 数
     uint8_t *rgb24Data = (uint8_t *)malloc(IDAT_RGB_DATA_LENGTH);
     // 填充 IDAT 的 RGB 数据
@@ -71,8 +69,8 @@ int main() {
     // IHDR 数据长度 转换成大端字节序
     uint32_t pngIhdrDataSize = switchUint32(IHDR_DATA_LENGTH);
     // 计算 IHDR CRC32
-    uint32_t ihdrDataCrc32 = calcCrc32(IHDR_ASCII, &pngIhdrData, IHDR_DATA_LENGTH);
-    
+    uint32_t ihdrDataCrc32 = calcCrc32(IHDR_ASCII, (uint8_t *) &pngIhdrData, IHDR_DATA_LENGTH);
+
     // 写 IHDR 数据长度
     fwrite(&pngIhdrDataSize, 1, sizeof(pngIhdrDataSize), file);
     // 写 IHDR ASCII
@@ -81,14 +79,14 @@ int main() {
     fwrite(&pngIhdrData, 1, IHDR_DATA_LENGTH, file);
     // 写 IHDR CRC32
     fwrite(&ihdrDataCrc32, 1, sizeof(ihdrDataCrc32), file);
-    
+
     // zlib 压缩数据
     uint8_t buf[IDAT_RGB_DATA_LENGTH];
     // 压缩后 buf 的数据长度 压缩完成后就是实际大小了
     uint32_t buflen = IDAT_RGB_DATA_LENGTH;
 
     // 执行 zlib 的压缩方法
-    compress(buf, &buflen, rgb24Data, IDAT_RGB_DATA_LENGTH);
+    compress(buf, (uLongf *) &buflen, rgb24Data, IDAT_RGB_DATA_LENGTH);
     printf("\n压缩前数据长度：%d \n压缩后数据长度为:%d \n", IDAT_RGB_DATA_LENGTH, buflen);
 
     // 计算 IDAT CRC32

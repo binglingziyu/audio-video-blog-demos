@@ -77,7 +77,7 @@ int main() {
     // IHDR 数据长度 转换成大端字节序
     uint32_t pngIhdrDataSize = switchUint32(IHDR_DATA_LENGTH);
     // 计算 IHDR CRC32
-    uint32_t ihdrDataCrc32 = calcCrc32(IHDR_ASCII, &pngIhdrData, IHDR_DATA_LENGTH);
+    uint32_t ihdrDataCrc32 = calcCrc32(IHDR_ASCII, (uint8_t *) &pngIhdrData, IHDR_DATA_LENGTH);
 
     // 写 IHDR 数据长度
     fwrite(&pngIhdrDataSize, 1, sizeof(pngIhdrDataSize), file);
@@ -113,7 +113,7 @@ int main() {
     uint32_t buflen = IDAT_INDEX_DATA_LENGTH;
 
     // 执行 zlib 的压缩方法
-    compress(buf, &buflen, rgbIndexData, IDAT_INDEX_DATA_LENGTH);
+    compress(buf, (uLongf *) &buflen, rgbIndexData, IDAT_INDEX_DATA_LENGTH);
     printf("\n压缩前数据长度：%d \n压缩后数据长度为:%d \n", IDAT_INDEX_DATA_LENGTH, buflen);
 
     // 计算 IDAT CRC32
