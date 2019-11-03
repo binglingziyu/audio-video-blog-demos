@@ -17,3 +17,6 @@
 [submodule "3rd/libattopng"]
 	path = 3rd/libattopng
 	url = git@github.com:misc0110/libattopng.git
+[submodule "3rd/lodepng"]
+	path = 3rd/lodepng
+	url = git@github.com:lvandeve/lodepng.git
