@@ -2,7 +2,7 @@
 // Created by hubin on 2019/9/19.
 //
 #include <stdio.h>
-#include "descampsa/yuv2rgb/yuv_rgb.h"
+#include "yuv_rgb.h"
 
 void rgb24ToYuv420p(uint8_t *RGB, uint8_t *YUV, uint32_t width, uint32_t height) {
     const YCbCrType yuv_format = YCBCR_601;

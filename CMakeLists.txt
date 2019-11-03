@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 project(image-demo-rgb-pixel)
 
+message(${CMAKE_SOURCE_DIR})
+
 add_subdirectory(demos)
 add_subdirectory(02-rgb-pixel)
 add_subdirectory(03-rgb-to-bmp)
