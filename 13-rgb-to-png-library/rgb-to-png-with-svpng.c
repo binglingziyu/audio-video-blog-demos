@@ -58,6 +58,7 @@ void rainbow_rgb() {
     int width = 700, height = 700;
     uint8_t rgb24Data[width*height*3];
     FILE *file = fopen("/Users/hubin/Desktop/svpng-rgb-rainbow.png", "wb");
+    // FILE *file = fopen("C:\\Users\\Administrator\\Desktop\\svpng-rgb-rainbow.png", "wb+");
 
     getRainbowRGB24Data(rgb24Data, width, height);
     svpng(file, width, height, rgb24Data, 0);

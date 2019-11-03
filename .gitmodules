@@ -14,3 +14,6 @@
 [submodule "3rd/svpng"]
 	path = 3rd/svpng
 	url = git@github.com:miloyip/svpng.git
+[submodule "3rd/libattopng"]
+	path = 3rd/libattopng
+	url = git@github.com:misc0110/libattopng.git
