@@ -1,9 +1,9 @@
-[submodule "09-rgb-to-yuv-library/libyuv"]
-	path = 09-rgb-to-yuv-library/libyuv
+[submodule "3rd/libyuv"]
+	path = 3rd/libyuv
 	url = git@github.com:lemenkov/libyuv.git
-[submodule "09-rgb-to-yuv-library/descampsa/yuv2rgb"]
-	path = 09-rgb-to-yuv-library/descampsa/yuv2rgb
+[submodule "3rd/descampsa/yuv2rgb"]
+	path = 3rd/descampsa/yuv2rgb
 	url = git@github.com:descampsa/yuv2rgb.git
-[submodule "11-rgb-to-png/zlib"]
-	path = 11-rgb-to-png/zlib
+[submodule "3rd/zlib"]
+	path = 3rd/zlib
 	url = https://github.com/madler/zlib
