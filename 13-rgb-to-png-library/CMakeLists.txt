@@ -16,3 +16,10 @@ add_executable(13-rgb-to-png-with-libattopng rgb-to-png-with-libattopng.c ${LIBA
 set(LODEPNG_SRC ../3rd/lodepng/lodepng.c)
 include_directories(../3rd/lodepng)
 add_executable(13-rgb-to-png-with-lodepng rgb-to-png-with-lodepng.c ${LODEPNG_SRC})
+
+aux_source_directory(../3rd/zlib ZLIB_SRC)
+aux_source_directory(../3rd/libpng LIBPNG_SRC)
+list(REMOVE_ITEM LIBPNG_SRC "../3rd/libpng/pngtest.c")
+include_directories(../3rd/libpng)
+include_directories(../3rd/zlib)
+add_executable(13-rgb-to-png-with-libpng rgb-to-png-with-libpng.c ${ZLIB_SRC} ${LIBPNG_SRC})

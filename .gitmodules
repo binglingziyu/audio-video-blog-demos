@@ -20,3 +20,6 @@
 [submodule "3rd/lodepng"]
 	path = 3rd/lodepng
 	url = git@github.com:lvandeve/lodepng.git
+[submodule "3rd/libpng"]
+	path = 3rd/libpng
+	url = git@github.com:glennrp/libpng.git
