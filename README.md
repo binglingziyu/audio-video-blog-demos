@@ -21,3 +21,7 @@
 [音视频入门-10-使用libyuv对YUV数据进行缩放、旋转、镜像、裁剪、混合](https://www.ihubin.com/blog/audio-video-basic-10-libyuv-usage/)
 
 [音视频入门-11-PNG文件格式详解](https://www.ihubin.com/blog/audio-video-basic-11-png-file-format-detail/)
+
+[音视频入门-12-手动生成一张PNG图片](https://www.ihubin.com/blog/audio-video-basic-12-generate-png-by-hand/)
+
+[音视频入门-13-使用开源库生成PNG图片](https://www.ihubin.com/blog/audio-video-basic-13-generate-png-with-library/)
