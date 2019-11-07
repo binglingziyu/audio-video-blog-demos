@@ -2,6 +2,7 @@
 // Created by hubin on 2019/11/7.
 //
 #include <stdint.h>
+#include <math.h>
 
 // 彩虹的七种颜色
 uint32_t rainbowColors[] = {
@@ -14,8 +15,31 @@ uint32_t rainbowColors[] = {
         0X8B00FF  // 紫
 };
 
-void genRGB24Data(uint8_t *rgbData, int width, int height) {
+uint8_t bound(uint8_t start, int value, uint8_t end) {
+    if(value <= start) {
+        return start;
+    }
+    if(value >= end) {
+        return end;
+    }
+    return value;
+}
 
+// Y = 0.299*R + 0.587*G + 0.114*B
+// U = Cb = -0.169*R - 0.331*G + 0.500*B + 128
+// V = Cr = 0.500*R - 0.419*G - 0.081*B + 128
+// R/G/B  [0 ~ 255]
+// Y/Cb/Cr[0 ~ 255]
+void rgbToYuv(uint8_t R, uint8_t G, uint8_t B, uint8_t *Y, uint8_t *U, uint8_t *V) {
+    int y_val = (int)round(0.299*R + 0.587*G + 0.114*B);
+    int u_val = (int)round(-0.169*R - 0.331*G + 0.500*B + 128);
+    int v_val = (int)round(0.500*R - 0.419*G - 0.081*B + 128);
+    *Y = bound(0, y_val, 255);
+    *U = bound(0, u_val, 255);
+    *V = bound(0, v_val, 255);
+}
+
+void genRGB24Data(uint8_t *rgbData, int width, int height) {
     for (int i = 0; i < width; ++i) {
         // 当前颜色
         uint32_t currentColor = rainbowColors[0];
@@ -48,41 +72,28 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
             rgbData[currentIndex+2] = B;
         }
     }
-
 }
 
-void rgb24ToYuv420p(uint8_t *destination, uint8_t *rgb, int width, int height) {
-    int image_size = width * height;
-    int upos = image_size;
-    int vpos = upos + upos / 4;
-    int i = 0;
+void rgb24ToYuv(const uint8_t *rgb24Data, int width, int height) {
+    int8_t yuv_y[width*height];
+    int8_t yuv_u[width*height];
+    int8_t yuv_v[width*height];
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            uint8_t Y, U, V;
+            uint8_t R, G, B;
 
-    for(int line = 0; line < height; ++line ) {
-        if( !(line % 2) ) {
-            for(int x = 0; x < width; x += 2 ) {
-                uint8_t r = rgb[3 * i];
-                uint8_t g = rgb[3 * i + 1];
-                uint8_t b = rgb[3 * i + 2];
+            int currentRGBIndex = 3*(i*height+j);
+            R = rgb24Data[currentRGBIndex];
+            G = rgb24Data[currentRGBIndex+1];
+            B = rgb24Data[currentRGBIndex+2];
 
-                destination[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
+            rgbToYuv(R, G, B, &Y, &U, &V);
 
-                destination[upos++] = ((-38*r + -74*g + 112*b) >> 8) + 128;
-                destination[vpos++] = ((112*r + -94*g + -18*b) >> 8) + 128;
-
-                r = rgb[3 * i];
-                g = rgb[3 * i + 1];
-                b = rgb[3 * i + 2];
-
-                destination[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
-            }
-        } else {
-            for(int x = 0; x < width; x += 1 ) {
-                uint8_t r = rgb[3 * i];
-                uint8_t g = rgb[3 * i + 1];
-                uint8_t b = rgb[3 * i + 2];
-
-                destination[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
-            }
+            int currentYUVIndex = i*height+j;
+            yuv_y[currentYUVIndex] = Y;
+            yuv_u[currentYUVIndex] = U;
+            yuv_v[currentYUVIndex] = V;
         }
     }
 }
