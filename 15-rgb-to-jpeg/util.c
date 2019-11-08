@@ -1,29 +1,7 @@
 //
 // Created by hubin on 2019/11/7.
 //
-#include <stdint.h>
-#include <math.h>
-
-// 彩虹的七种颜色
-uint32_t rainbowColors[] = {
-        0XFF0000, // 红
-        0XFFA500, // 橙
-        0XFFFF00, // 黄
-        0X00FF00, // 绿
-        0X007FFF, // 青
-        0X0000FF, // 蓝
-        0X8B00FF  // 紫
-};
-
-uint8_t bound(uint8_t start, int value, uint8_t end) {
-    if(value <= start) {
-        return start;
-    }
-    if(value >= end) {
-        return end;
-    }
-    return value;
-}
+#include "util.h"
 
 // Y = 0.299*R + 0.587*G + 0.114*B
 // U = Cb = -0.169*R - 0.331*G + 0.500*B + 128
