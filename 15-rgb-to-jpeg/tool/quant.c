@@ -26,6 +26,9 @@ const int STD_QUANT_TAB_CHROM[64] =
     99, 99, 99, 99, 99, 99, 99, 99,
 };
 
+void init_quant_tables(int quality_scale) {
+
+}
 
 /* 函数实现 */
 void quant_encode(int du[64], int qtab[64])

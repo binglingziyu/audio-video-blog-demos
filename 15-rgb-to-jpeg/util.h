@@ -30,4 +30,6 @@ uint8_t bound(uint8_t start, int value, uint8_t end) {
     return value;
 }
 
+void genRGB24Data(uint8_t *rgbData, int width, int height);
+void rgb24ToYuv(const uint8_t *rgb24Data, int8_t *yuv_y, int8_t *yuv_u, int8_t *yuv_v, int width, int height);
 #endif //IMAGE_DEMO_RGB_PIXEL_UTIL_H

@@ -3,37 +3,23 @@
 //
 #include "util.h"
 
-// Y = 0.299*R + 0.587*G + 0.114*B
-// U = Cb = -0.169*R - 0.331*G + 0.500*B + 128
-// V = Cr = 0.500*R - 0.419*G - 0.081*B + 128
-// R/G/B  [0 ~ 255]
-// Y/Cb/Cr[0 ~ 255]
-void rgbToYuv(uint8_t R, uint8_t G, uint8_t B, uint8_t *Y, uint8_t *U, uint8_t *V) {
-    int y_val = (int)round(0.299*R + 0.587*G + 0.114*B);
-    int u_val = (int)round(-0.169*R - 0.331*G + 0.500*B + 128);
-    int v_val = (int)round(0.500*R - 0.419*G - 0.081*B + 128);
-    *Y = bound(0, y_val, 255);
-    *U = bound(0, u_val, 255);
-    *V = bound(0, v_val, 255);
-}
-
 void genRGB24Data(uint8_t *rgbData, int width, int height) {
     for (int i = 0; i < width; ++i) {
         // 当前颜色
         uint32_t currentColor = rainbowColors[0];
-        if(i < 100) {
+        if(i < 10) {
             currentColor = rainbowColors[0];
-        } else if(i < 200) {
+        } else if(i < 20) {
             currentColor = rainbowColors[1];
-        } else if(i < 300) {
+        } else if(i < 30) {
             currentColor = rainbowColors[2];
-        } else if(i < 400) {
+        } else if(i < 40) {
             currentColor = rainbowColors[3];
-        } else if(i < 500) {
+        } else if(i < 50) {
             currentColor = rainbowColors[4];
-        } else if(i < 600) {
+        } else if(i < 60) {
             currentColor = rainbowColors[5];
-        } else if(i < 700) {
+        } else if(i < 70) {
             currentColor = rainbowColors[6];
         }
         // 当前颜色 R 分量
@@ -52,10 +38,21 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
     }
 }
 
-void rgb24ToYuv(const uint8_t *rgb24Data, int width, int height) {
-    int8_t yuv_y[width*height];
-    int8_t yuv_u[width*height];
-    int8_t yuv_v[width*height];
+// Y = 0.299*R + 0.587*G + 0.114*B
+// U = Cb = -0.169*R - 0.331*G + 0.500*B + 128
+// V = Cr = 0.500*R - 0.419*G - 0.081*B + 128
+// R/G/B  [0 ~ 255]
+// Y/Cb/Cr[0 ~ 255]
+void rgbToYuv(uint8_t R, uint8_t G, uint8_t B, uint8_t *Y, uint8_t *U, uint8_t *V) {
+    int y_val = (int)round(0.299*R + 0.587*G + 0.114*B);
+    int u_val = (int)round(-0.169*R - 0.331*G + 0.500*B + 128);
+    int v_val = (int)round(0.500*R - 0.419*G - 0.081*B + 128);
+    *Y = bound(0, y_val, 255);
+    *U = bound(0, u_val, 255);
+    *V = bound(0, v_val, 255);
+}
+
+void rgb24ToYuv(const uint8_t *rgb24Data, int8_t *yuv_y, int8_t *yuv_u, int8_t *yuv_v, int width, int height) {
     for (int i = 0; i < width; ++i) {
         for (int j = 0; j < height; ++j) {
             uint8_t Y, U, V;
@@ -75,3 +72,4 @@ void rgb24ToYuv(const uint8_t *rgb24Data, int width, int height) {
         }
     }
 }
+

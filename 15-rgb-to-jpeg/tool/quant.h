@@ -10,6 +10,7 @@ extern const int STD_QUANT_TAB_LUMIN[64];
 extern const int STD_QUANT_TAB_CHROM[64];
 
 /* 函数声明 */
+void init_quant_tables(int quality_scale);
 void quant_encode(int du[64], int qtab[64]);
 void quant_decode(int du[64], int qtab[64]);
 
