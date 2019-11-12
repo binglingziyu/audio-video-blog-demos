@@ -3,6 +3,17 @@
 //
 #include "util.h"
 
+// 彩虹的七种颜色
+uint32_t rainbowColors[] = {
+        0XFF0000, // 红
+        0XFFA500, // 橙
+        0XFFFF00, // 黄
+        0X00FF00, // 绿
+        0X007FFF, // 青
+        0X0000FF, // 蓝
+        0X8B00FF  // 紫
+};
+
 void genRGB24Data(uint8_t *rgbData, int width, int height) {
     for (int i = 0; i < width; ++i) {
         // 当前颜色
@@ -34,41 +45,6 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
             rgbData[currentIndex] = R;
             rgbData[currentIndex+1] = G;
             rgbData[currentIndex+2] = B;
-        }
-    }
-}
-
-// Y = 0.299*R + 0.587*G + 0.114*B
-// U = Cb = -0.169*R - 0.331*G + 0.500*B + 128
-// V = Cr = 0.500*R - 0.419*G - 0.081*B + 128
-// R/G/B  [0 ~ 255]
-// Y/Cb/Cr[0 ~ 255]
-void rgbToYuv(uint8_t R, uint8_t G, uint8_t B, uint8_t *Y, uint8_t *U, uint8_t *V) {
-    int y_val = (int)round(0.299*R + 0.587*G + 0.114*B);
-    int u_val = (int)round(-0.169*R - 0.331*G + 0.500*B + 128);
-    int v_val = (int)round(0.500*R - 0.419*G - 0.081*B + 128);
-    *Y = bound(0, y_val, 255);
-    *U = bound(0, u_val, 255);
-    *V = bound(0, v_val, 255);
-}
-
-void rgb24ToYuv(const uint8_t *rgb24Data, int8_t *yuv_y, int8_t *yuv_u, int8_t *yuv_v, int width, int height) {
-    for (int i = 0; i < width; ++i) {
-        for (int j = 0; j < height; ++j) {
-            uint8_t Y, U, V;
-            uint8_t R, G, B;
-
-            int currentRGBIndex = 3*(i*height+j);
-            R = rgb24Data[currentRGBIndex];
-            G = rgb24Data[currentRGBIndex+1];
-            B = rgb24Data[currentRGBIndex+2];
-
-            rgbToYuv(R, G, B, &Y, &U, &V);
-
-            int currentYUVIndex = i*height+j;
-            yuv_y[currentYUVIndex] = Y;
-            yuv_u[currentYUVIndex] = U;
-            yuv_v[currentYUVIndex] = V;
         }
     }
 }

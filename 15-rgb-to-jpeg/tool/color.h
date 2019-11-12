@@ -1,21 +1,19 @@
-#ifndef __FFJPEG_COLOR_H__
-#define __FFJPEG_COLOR_H__
+//
+// Created by hubin on 2019/11/8.
+//
+
+#ifndef IMAGE_DEMO_RGB_PIXEL_COLOR_H
+#define IMAGE_DEMO_RGB_PIXEL_COLOR_H
 
 // 包含头文件
-#include "stdefine.h"
+#include <stdint.h>
+#include <math.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+uint8_t bound(uint8_t start, int value, uint8_t end);
 
-void yuv_to_rgb(int y, int u, int v, BYTE *r, BYTE *g, BYTE *b);
-void rgb_to_yuv(BYTE r, BYTE g, BYTE b, int *y, int *u, int *v);
+void rgb24ToYuv(const uint8_t *rgb24Data, uint8_t *yuv_y, uint8_t *yuv_u, uint8_t *yuv_v, int width, int height);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif //IMAGE_DEMO_RGB_PIXEL_COLOR_H
 
 
 

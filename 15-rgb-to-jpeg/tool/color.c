@@ -1,44 +1,53 @@
-/* 包含头文件 */
+//
+// Created by hubin on 2019/11/8.
+//
+
 #include "color.h"
 
-/*
-    y = ( 0.2990f * r + 0.5870f * g + 0.1140f * b - 128);
-    u = (-0.1678f * r - 0.3313f * g + 0.5000f * b + 0  );
-    v = ( 0.5000f * r - 0.4187f * g - 0.0813f * b + 0  );
-
-    r = (y                + 1.40200f * v);
-    g = (y - 0.34414f * u - 0.71414f * v);
-    b = (y + 1.77200f * u               );
-*/
-// yuv - 32bit signed fixed q11
-// rgb - 8bits unsigned integer
-void yuv_to_rgb(int y, int u, int v, BYTE *r, BYTE *g, BYTE *b)
-{
-    int tr, tg, tb;
-
-    y += 128 << FIXQ;
-    tr = (y + (FLOAT2FIX(1.40200f) * v >> FIXQ)) >> FIXQ;
-    tg = (y - (FLOAT2FIX(0.34414f) * u >> FIXQ) - (FLOAT2FIX(0.71414f) * v >> FIXQ)) >> FIXQ;
-    tb = (y + (FLOAT2FIX(1.77200f) * u >> FIXQ)) >> FIXQ;
-
-    /* 饱和处理 */
-    *r = tr < 0 ? 0 : tr < 255 ? tr : 255;
-    *g = tg < 0 ? 0 : tg < 255 ? tg : 255;
-    *b = tb < 0 ? 0 : tb < 255 ? tb : 255;
+uint8_t bound(uint8_t start, int value, uint8_t end) {
+    if(value <= start) {
+        return start;
+    }
+    if(value >= end) {
+        return end;
+    }
+    return value;
 }
 
-// rgb - 8bits unsigned integer
-// yuv - 32bit signed fixed q2
-void rgb_to_yuv(BYTE r, BYTE g, BYTE b, int *y, int *u, int *v)
-{
-    *y = FLOAT2FIX( 0.2990f) * r + FLOAT2FIX(0.5870f) * g + FLOAT2FIX(0.1140f) * b - (128 << FIXQ);
-    *u = FLOAT2FIX(-0.1678f) * r - FLOAT2FIX(0.3313f) * g + FLOAT2FIX(0.5000f) * b;
-    *v = FLOAT2FIX( 0.5000f) * r - FLOAT2FIX(0.4187f) * g - FLOAT2FIX(0.0813f) * b;
-    *y >>= FIXQ - 2;
-    *u >>= FIXQ - 2;
-    *v >>= FIXQ - 2;
+// Y = 0.299*R + 0.587*G + 0.114*B
+// U = Cb = -0.169*R - 0.331*G + 0.500*B + 128
+// V = Cr = 0.500*R - 0.419*G - 0.081*B + 128
+// R/G/B  [0 ~ 255]
+// Y/Cb/Cr[0 ~ 255]
+void rgbToYuv(uint8_t R, uint8_t G, uint8_t B, uint8_t *Y, uint8_t *U, uint8_t *V) {
+    int y_val = (int)round(0.299*R + 0.587*G + 0.114*B);
+    int u_val = (int)round(-0.169*R - 0.331*G + 0.500*B + 128);
+    int v_val = (int)round(0.500*R - 0.419*G - 0.081*B + 128);
+    *Y = bound(0, y_val, 255);
+    *U = bound(0, u_val, 255);
+    *V = bound(0, v_val, 255);
 }
 
+void rgb24ToYuv(const uint8_t *rgb24Data, uint8_t *yuv_y, uint8_t *yuv_u, uint8_t *yuv_v, int width, int height) {
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            uint8_t Y, U, V;
+            uint8_t R, G, B;
+
+            int currentRGBIndex = 3*(i*height+j);
+            R = rgb24Data[currentRGBIndex];
+            G = rgb24Data[currentRGBIndex+1];
+            B = rgb24Data[currentRGBIndex+2];
+
+            rgbToYuv(R, G, B, &Y, &U, &V);
+
+            int currentYUVIndex = i*height+j;
+            yuv_y[currentYUVIndex] = Y;
+            yuv_u[currentYUVIndex] = U;
+            yuv_v[currentYUVIndex] = V;
+        }
+    }
+}
 
 
 
