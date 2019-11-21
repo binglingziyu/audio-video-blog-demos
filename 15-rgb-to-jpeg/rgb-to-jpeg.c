@@ -71,9 +71,9 @@ int main() {
 
     // 3. 分块
     int block_size = calc_block_size(width, height);
-    uint8_t y_blocks[100][64];
-    uint8_t u_blocks[100][64];
-    uint8_t v_blocks[100][64];
+    uint8_t y_blocks[block_size][64];
+    uint8_t u_blocks[block_size][64];
+    uint8_t v_blocks[block_size][64];
     block_data_8x8(yuv_y, y_blocks, width, height);
     block_data_8x8(yuv_u, u_blocks, width, height);
     block_data_8x8(yuv_v, v_blocks, width, height);
