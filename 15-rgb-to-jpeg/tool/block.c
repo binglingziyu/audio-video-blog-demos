@@ -4,7 +4,7 @@
 
 #include "block.h"
 
-void get_8x8_block(uint8_t *data, uint8_t *block_data, int h_block_pos, int v_block_pos, int width, int height) {
+void get_8x8_block(const uint8_t *data, uint8_t *block_data, int h_block_pos, int v_block_pos, int width, int height) {
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 8; j++) {
             int h_pos = h_block_pos*8 + i;
