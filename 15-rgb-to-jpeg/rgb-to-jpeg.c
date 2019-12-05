@@ -40,6 +40,22 @@ void print_block_d(int8_t *data) {
     printf("\n\n");
 }
 
+void print_block_f(float *data) {
+    for(int i = 0; i < 8; i++) {
+        int start_pos = i*8;
+        printf("%3.2f  %3.2f  %3.2f  %3.2f  %3.2f  %3.2f  %3.2f  %3.2f\n",
+               data[start_pos],
+               data[start_pos+1],
+               data[start_pos+2],
+               data[start_pos+3],
+               data[start_pos+4],
+               data[start_pos+5],
+               data[start_pos+6],
+               data[start_pos+7]);
+    }
+    printf("\n\n");
+}
+
 int main() {
 
     // JPEG 指定压缩质量 1~99
@@ -79,30 +95,34 @@ int main() {
     block_data_8x8(yuv_v, v_blocks, width, height);
 
     // 4. 离散余弦变换（DCT）
-    int8_t y_blocks_dct[block_size][64];
-    int8_t u_blocks_dct[block_size][64];
-    int8_t v_blocks_dct[block_size][64];
+    transMat();
+    float y_blocks_dct[block_size][64];
+    float u_blocks_dct[block_size][64];
+    float v_blocks_dct[block_size][64];
     for(int y_index = 0; y_index < block_size; y_index++) {
         uint8_t *y_block = y_blocks[y_index];
         // DCT 之前减去 128
-        for(int i = 0; i < 64; i++) {y_blocks_dct[y_index][i] = y_block[i]-128;}
-        if(y_index==0)print_block_u(y_block);
-        if(y_index==0)print_block_d(y_blocks_dct[y_index]);
+        for(int i = 0; i < 64; i++) {y_blocks_dct[y_index][i] =  (float)(y_block[i]-128);}
+        //if(y_index==0)print_block_u(y_block);
+        //if(y_index==0)print_block_f(y_blocks_dct[y_index]);
+        fdct(y_blocks_dct[y_index]);
+//        if(y_index == 11)print_block_f(y_blocks_dct[y_index]);
+//        if(y_index == 21)print_block_f(y_blocks_dct[y_index]);
     }
-    for(int u_index = 0; u_index < block_size; u_index++) {
-        uint8_t *u_block = u_blocks[u_index];
-        // DCT 之前减去 128
-        for(int i = 0; i < 64; i++) {u_blocks_dct[u_index][i] = u_block[i] - 128;}
-        if(u_index==0)print_block_u(u_block);
-        if(u_index==0)print_block_d(u_blocks_dct[u_index]);
-    }
-    for(int v_index = 0; v_index < block_size; v_index++) {
-        uint8_t *v_block = v_blocks[v_index];
-        // DCT 之前减去 128
-        for(int i = 0; i < 64; i++) {v_blocks_dct[v_index][i] = v_block[i] - 128;}
-        if(v_index==0)print_block_u(v_block);
-        if(v_index==0)print_block_d(v_blocks_dct[v_index]);
-    }
+//    for(int u_index = 0; u_index < block_size; u_index++) {
+//        uint8_t *u_block = u_blocks[u_index];
+//        // DCT 之前减去 128
+//        for(int i = 0; i < 64; i++) {u_blocks_dct[u_index][i] =  (float)(u_block[i] - 128);}
+//        if(u_index==0)print_block_u(u_block);
+//        if(u_index==0)print_block_f(u_blocks_dct[u_index]);
+//    }
+//    for(int v_index = 0; v_index < block_size; v_index++) {
+//        uint8_t *v_block = v_blocks[v_index];
+//        // DCT 之前减去 128
+//        for(int i = 0; i < 64; i++) {v_blocks_dct[v_index][i] =  (float)(v_block[i] - 128);}
+//        if(v_index==0)print_block_u(v_block);
+//        if(v_index==0)print_block_f(v_blocks_dct[v_index]);
+//    }
 
     return 0;
 }
