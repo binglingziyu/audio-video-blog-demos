@@ -15,15 +15,13 @@ const int ZIGZAG[64] =
         };
 
 /* 函数实现 */
-void zigzag_encode(int *data)
-{
+void zigzag_encode(int data[64]) {
     int buf[64], i;
     for (i=0; i<64; i++) buf [i] = data[ZIGZAG[i]];
     for (i=0; i<64; i++) data[i] = buf[i];
 }
 
-void zigzag_decode(int *data)
-{
+void zigzag_decode(int data[64]) {
     int buf[64], i;
     for (i=0; i<64; i++) buf [ZIGZAG[i]] = data[i];
     for (i=0; i<64; i++) data[i] = buf[i];

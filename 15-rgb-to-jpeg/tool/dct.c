@@ -14,16 +14,16 @@ void transMat() {
         for(j = 0; j < MAT_SIZE; j++) {
             a = 0;
             if(i == 0) {
-                a = sqrt((float)1/MAT_SIZE);
+                a = sqrt((float)1/(float)MAT_SIZE);
             } else {
-                a = sqrt((float)2/MAT_SIZE);
+                a = sqrt((float)2/(float)MAT_SIZE);
             }
             DCT_Mat[i*MAT_SIZE+j] = a*cos((j+0.5)*PI*i/MAT_SIZE); //变换矩阵
         }
     }
 }
 
-void fdct(float data[64]) {
+void fdct(int data[64]) {
     float t=0;
     int i,j,k;
     for(i = 0; i< MAT_SIZE; i++) { //相当于A*I
@@ -41,7 +41,7 @@ void fdct(float data[64]) {
             for(k = 0; k < MAT_SIZE; k++) {
                 t+=DctMapTmp[i*MAT_SIZE+k]*DCT_Mat[j*MAT_SIZE+k];
             }
-            data[i*MAT_SIZE+j]=t;
+            data[i*MAT_SIZE+j]=(int)t;
         }
     }
 }

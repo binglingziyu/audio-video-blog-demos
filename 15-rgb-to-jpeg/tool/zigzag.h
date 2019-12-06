@@ -9,8 +9,8 @@ extern "C" {
 extern const int ZIGZAG[64];
 
 /* 函数声明 */
-void zigzag_encode(int *data);
-void zigzag_decode(int *data);
+void zigzag_encode(int data[64]);
+void zigzag_decode(int data[64]);
 
 #ifdef __cplusplus
 }

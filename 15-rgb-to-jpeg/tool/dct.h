@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 void transMat();
-void fdct(float data[64]);
+void fdct(int data[64]);
 
 #ifdef __cplusplus
 }
