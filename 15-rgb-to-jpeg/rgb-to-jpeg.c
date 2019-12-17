@@ -5,12 +5,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include "test.h"
 #include "util.h"
+#include "bitstr.h"
 #include "color.h"
 #include "block.h"
 #include "dct.h"
 #include "zigzag.h"
 #include "quant.h"
+#include "huffman.h"
 
 void print_block_u(uint8_t *data) {
     for(int i = 0; i < 8; i++) {
@@ -74,6 +77,8 @@ void print_block_f(float *data) {
     }
     printf("\n\n");
 }
+
+void encode_du(HUFCODEC *hfcac, HUFCODEC *hfcdc, int du[64], int *dc);
 
 int main() {
 
@@ -140,11 +145,25 @@ int main() {
         fdct(v_blocks_dct[v_index]);
     }
 
-    // 5. Zigzag 扫描排序
+    // 5. 量化
+    int *pqtab[2];
+    pqtab[0] = malloc(64*sizeof(int));
+    pqtab[1] = malloc(64*sizeof(int));
+    memcpy(pqtab[0], STD_QUANT_TAB_LUMIN, 64*sizeof(int));
+    memcpy(pqtab[1], STD_QUANT_TAB_CHROM, 64*sizeof(int));
     for(int y_index = 0; y_index < block_size; y_index++) {
-        // if(y_index == 11) print_block_i(y_blocks_dct[y_index]);
+        quant_encode(y_blocks_dct[y_index], pqtab[0]);
+    }
+    for(int u_index = 0; u_index < block_size; u_index++) {
+        quant_encode(u_blocks_dct[u_index], pqtab[1]);
+    }
+    for(int v_index = 0; v_index < block_size; v_index++) {
+        quant_encode(v_blocks_dct[v_index], pqtab[1]);
+    }
+
+    // 6. Zigzag 扫描排序
+    for(int y_index = 0; y_index < block_size; y_index++) {
         zigzag_encode(y_blocks_dct[y_index]);
-         if(y_index == 11) print_block_i(y_blocks_dct[y_index]);
     }
     for(int u_index = 0; u_index < block_size; u_index++) {
         zigzag_encode(u_blocks_dct[u_index]);
@@ -153,25 +172,203 @@ int main() {
         zigzag_encode(v_blocks_dct[v_index]);
     }
 
-    // 6. 量化
-    int lumin_quant_tab[64];
-    for(int i = 0; i < 64; i++) {lumin_quant_tab[i] = STD_QUANT_TAB_LUMIN[i];}
-    zigzag_encode(lumin_quant_tab);
-    for(int y_index = 0; y_index < block_size; y_index++) {
-        if(y_index == 11) print_block_i(y_blocks_dct[y_index]);
-        quant_encode(y_blocks_dct[y_index], lumin_quant_tab);
-        if(y_index == 11) print_block_i(y_blocks_dct[y_index]);
-    }
-    int chrom_quant_tab[64];
-    for(int i = 0; i < 64; i++) {lumin_quant_tab[i] = STD_QUANT_TAB_CHROM[i];}
-    zigzag_encode(chrom_quant_tab);
-    for(int u_index = 0; u_index < block_size; u_index++) {
-        quant_encode(u_blocks_dct[u_index], chrom_quant_tab);
-    }
-    for(int v_index = 0; v_index < block_size; v_index++) {
-        quant_encode(v_blocks_dct[v_index], chrom_quant_tab);
+
+    int   dc[3]= {0};
+    void *bs = bitstr_open(BITSTR_MEM, (char*) malloc(width*height*2), (char *) (width * height * 2));
+    // huffman codec ac
+    HUFCODEC *phcac[2];
+    phcac[0]= calloc(1, sizeof(HUFCODEC));
+    phcac[1]= calloc(1, sizeof(HUFCODEC));
+    // huffman codec dc
+    HUFCODEC *phcdc[2];
+    phcdc[0] = calloc(1, sizeof(HUFCODEC));
+    phcdc[1] = calloc(1, sizeof(HUFCODEC));
+    // init huffman codec
+    memcpy(phcac[0]->huftab, STD_HUFTAB_LUMIN_AC, MAX_HUFFMAN_CODE_LEN + 256);
+    memcpy(phcac[1]->huftab, STD_HUFTAB_CHROM_AC, MAX_HUFFMAN_CODE_LEN + 256);
+    memcpy(phcdc[0]->huftab, STD_HUFTAB_LUMIN_DC, MAX_HUFFMAN_CODE_LEN + 256);
+    memcpy(phcdc[1]->huftab, STD_HUFTAB_CHROM_DC, MAX_HUFFMAN_CODE_LEN + 256);
+    phcac[0]->output = bs; huffman_encode_init(phcac[0], 1);
+    phcac[1]->output = bs; huffman_encode_init(phcac[1], 1);
+    phcdc[0]->output = bs; huffman_encode_init(phcdc[0], 1);
+    phcdc[1]->output = bs; huffman_encode_init(phcdc[1], 1);
+    // 7. DC 系数的差分脉冲调制编码
+
+    for(int index = 0; index < block_size; index++) {
+        encode_du(phcac[0], phcdc[0], y_blocks_dct[index], &(dc[0]));
+        encode_du(phcac[1], phcdc[1], u_blocks_dct[index], &(dc[1]));
+        encode_du(phcac[1], phcdc[1], v_blocks_dct[index], &(dc[2]));
     }
 
+    printf("result = %ld", bitstr_tell(bs));
 
+    FILE *fp = fopen("C:\\Users\\Administrator\\Desktop\\rainbow-rgb-to-jpeg.jpg", "wb+");
+    // FILE *fp = fopen("/Users/hubin/Desktop/rainbow-rgb-to-jpeg.jpg", "wb");
+
+    // output SOI
+    fputc(0xff, fp);
+    fputc(0xd8, fp);
+
+    // output DQT
+    for (int i = 0; i < 2; i++) {
+        int len = 2 + 1 + 64;
+        fputc(0xff, fp);
+        fputc(0xdb, fp);
+        fputc(len >> 8, fp);
+        fputc(len >> 0, fp);
+        fputc(i   , fp);
+        for (int j = 0; j < 64; j++) {
+            fputc(pqtab[i][ZIGZAG[j]], fp);
+        }
+    }
+
+    // output SOF0
+    int SOF0Len = 2 + 1 + 2 + 2 + 1 + 3 * 3;
+    fputc(0xff, fp);
+    fputc(0xc0, fp);
+    fputc(SOF0Len >> 8, fp);
+    fputc(SOF0Len >> 0, fp);
+    fputc(8   , fp); // precision 8bit
+    fputc(height >> 8, fp); // height
+    fputc(height >> 0, fp); // height
+    fputc(width  >> 8, fp); // width
+    fputc(width  >> 0, fp); // width
+    fputc(3, fp);
+
+//    for (int i = 0; i < 3; i++) {
+//        fputc(jfif->comp_info[i].id, fp);
+//        fputc((jfif->comp_info[i].samp_factor_v << 0)|(jfif->comp_info[i].samp_factor_h << 4), fp);
+//        fputc(jfif->comp_info[i].qtab_idx, fp);
+//    }
+    fputc(0x01, fp); fputc(0x11, fp); fputc(0x00, fp);
+    fputc(0x02, fp); fputc(0x11, fp); fputc(0x01, fp);
+    fputc(0x03, fp); fputc(0x11, fp); fputc(0x01, fp);
+
+    // output DHT AC
+    for (int i = 0; i < 2; i++) {
+        fputc(0xff, fp);
+        fputc(0xc4, fp);
+        int len = 2 + 1 + 16;
+        for (int j = 0; j < 16; j++) len += phcac[i]->huftab[j];
+        fputc(len >> 8, fp);
+        fputc(len >> 0, fp);
+        fputc(i + 0x10, fp);
+        fwrite(phcac[i]->huftab, len - 3, 1, fp);
+    }
+
+    // output DHT DC
+    for (int i = 0; i < 2; i++) {
+        fputc(0xff, fp);
+        fputc(0xc4, fp);
+        int len = 2 + 1 + 16;
+        for (int j = 0; j < 16; j++) len += phcdc[i]->huftab[j];
+        fputc(len >> 8, fp);
+        fputc(len >> 0, fp);
+        fputc(i + 0x00, fp);
+        fwrite(phcdc[i]->huftab, len - 3, 1, fp);
+    }
+
+    // output SOS
+    int SOSLen = 2 + 1 + 2 * 3 + 3;
+    fputc(0xff, fp);
+    fputc(0xda, fp);
+    fputc(SOSLen >> 8, fp);
+    fputc(SOSLen >> 0, fp);
+    fputc(3, fp);
+
+    fputc(0x01, fp); fputc(0x00, fp);
+    fputc(0x02, fp); fputc(0x11, fp);
+    fputc(0x03, fp); fputc(0x11, fp);
+
+    fputc(0x00, fp);
+    fputc(0x3F, fp);
+    fputc(0x00, fp);
+
+    // TODO:output data
+//    if (jfif->databuf) {
+//        fwrite(jfif->databuf, jfif->datalen, 1, fp);
+//    }
+
+    // output EOI
+    fputc(0xff, fp);
+    fputc(0xd9, fp);
+
+//    // close huffman codec
+//    huffman_encode_done(phcac[0]);
+//    huffman_encode_done(phcac[1]);
+//    huffman_encode_done(phcdc[0]);
+//    huffman_encode_done(phcdc[1]);
+//    jfif->datalen = bitstr_tell(bs);
+//
+//    // close bit stream
+//    bitstr_close(bs);
     return 0;
+}
+
+#define DU_TYPE_LUMIN  0
+#define DU_TYPE_CHROM  1
+
+typedef struct {
+    unsigned runlen   : 4;
+    unsigned codesize : 4;
+    unsigned codedata : 16;
+} RLEITEM;
+
+void category_encode(int *code, int *size) {
+    unsigned absc = abs(*code);
+    unsigned mask = (1 << 15);
+    int i    = 15;
+    if (absc == 0) { *size = 0; return; }
+    while (i && !(absc & mask)) { mask >>= 1; i--; }
+    *size = i + 1;
+    if (*code < 0) *code = (1 << *size) - absc - 1;
+}
+
+void encode_du(HUFCODEC *hfcac, HUFCODEC *hfcdc, int du[64], int *dc) {
+    void     *bs    = hfcac->output;
+    int       diff, code, size;
+    RLEITEM   rlelist[63];
+    int       i, j, n, eob;
+
+    // dc
+    diff = du[0] - *dc;
+    *dc  = du[0];
+
+    // category encode for dc
+    code = diff;
+    category_encode(&code, &size);
+
+    // huffman encode for dc
+    huffman_encode_step(hfcdc, size);
+    bitstr_put_bits(bs, code, size);
+
+    // rle encode for ac
+    for (i=1, j=0, n=0, eob=0; i<64 && j<63; i++) {
+        if (du[i] == 0 && n < 15) {
+            n++;
+        } else {
+            code = du[i]; size = 0;
+            category_encode(&code, &size);
+            rlelist[j].runlen   = n;
+            rlelist[j].codesize = size;
+            rlelist[j].codedata = code;
+            n = 0;
+            j++;
+            if (size != 0) eob = j;
+        }
+    }
+
+    // set eob
+    if (du[63] == 0) {
+        rlelist[eob].runlen   = 0;
+        rlelist[eob].codesize = 0;
+        rlelist[eob].codedata = 0;
+        j = eob + 1;
+    }
+
+    // huffman encode for ac
+    for (i=0; i<j; i++) {
+        huffman_encode_step(hfcac, (rlelist[i].runlen << 4) | (rlelist[i].codesize << 0));
+        bitstr_put_bits(bs, rlelist[i].codedata, rlelist[i].codesize);
+    }
 }
