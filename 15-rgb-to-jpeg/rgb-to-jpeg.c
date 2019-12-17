@@ -174,7 +174,8 @@ int main() {
 
 
     int   dc[3]= {0};
-    void *bs = bitstr_open(BITSTR_MEM, (char*) malloc(width*height*2), (char *) (width * height * 2));
+    char *buffer = malloc(width*height*2);
+    void *bs = bitstr_open(BITSTR_MEM, buffer, (char *) (width * height * 2));
     // huffman codec ac
     HUFCODEC *phcac[2];
     phcac[0]= calloc(1, sizeof(HUFCODEC));
@@ -200,7 +201,8 @@ int main() {
         encode_du(phcac[1], phcdc[1], v_blocks_dct[index], &(dc[2]));
     }
 
-    printf("result = %ld", bitstr_tell(bs));
+    long dataLength = bitstr_tell(bs);
+    printf("result = %ld", dataLength);
 
     FILE *fp = fopen("C:\\Users\\Administrator\\Desktop\\rainbow-rgb-to-jpeg.jpg", "wb+");
     // FILE *fp = fopen("/Users/hubin/Desktop/rainbow-rgb-to-jpeg.jpg", "wb");
@@ -284,10 +286,10 @@ int main() {
     fputc(0x3F, fp);
     fputc(0x00, fp);
 
-    // TODO:output data
-//    if (jfif->databuf) {
-//        fwrite(jfif->databuf, jfif->datalen, 1, fp);
-//    }
+    // output data
+    if (buffer) {
+        fwrite(buffer, dataLength, 1, fp);
+    }
 
     // output EOI
     fputc(0xff, fp);
