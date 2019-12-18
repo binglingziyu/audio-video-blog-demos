@@ -295,6 +295,9 @@ int main() {
     fputc(0xff, fp);
     fputc(0xd9, fp);
 
+    fflush(fp);
+    fclose(fp);
+
 //    // close huffman codec
 //    huffman_encode_done(phcac[0]);
 //    huffman_encode_done(phcac[1]);

@@ -31,6 +31,16 @@ void init_quant_tables(int quality_scale) {
 /* 函数实现 */
 void quant_encode(int du[64], int qtab[64]) {
     int i; for (i=0; i<64; i++) du[i] /= qtab[i];
+//    int i;
+//    for (i=0; i<64; i++) {
+//        int tmp = du[i] / qtab[i];
+//        if(tmp > 32767) {
+//            tmp = 32767;
+//        } else if(tmp < -32767) {
+//            tmp = -32767;
+//        }
+//        du[i] = tmp;
+//    }
 }
 
 void quant_decode(int du[64], int qtab[64]) {
