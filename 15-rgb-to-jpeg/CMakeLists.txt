@@ -5,4 +5,4 @@ set(CMAKE_C_STANDARD 99)
 aux_source_directory(tool TOOL_SRC)
 include_directories(tool)
 
-add_executable(15-rgb-to-jpeg rgb-to-jpeg.c util.c ${TOOL_SRC} test.c)
+add_executable(15-rgb-to-jpeg rgb-to-jpeg.c ${TOOL_SRC})

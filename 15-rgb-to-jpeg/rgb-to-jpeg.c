@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "test.h"
 #include "util.h"
+#include "log.h"
 #include "bitstr.h"
 #include "color.h"
 #include "block.h"
@@ -15,75 +15,9 @@
 #include "quant.h"
 #include "huffman.h"
 
-void print_block_u(uint8_t *data) {
-    for(int i = 0; i < 8; i++) {
-        int start_pos = i*8;
-        printf("%3u  %3u  %3u  %3u  %3u  %3u  %3u  %3u\n",
-               data[start_pos],
-               data[start_pos+1],
-               data[start_pos+2],
-               data[start_pos+3],
-               data[start_pos+4],
-               data[start_pos+5],
-               data[start_pos+6],
-               data[start_pos+7]);
-    }
-    printf("\n\n");
-}
-void print_block_d(int8_t *data) {
-    for(int i = 0; i < 8; i++) {
-        int start_pos = i*8;
-        printf("%3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d\n",
-               data[start_pos],
-               data[start_pos+1],
-               data[start_pos+2],
-               data[start_pos+3],
-               data[start_pos+4],
-               data[start_pos+5],
-               data[start_pos+6],
-               data[start_pos+7]);
-    }
-    printf("\n\n");
-}
-
-void print_block_i(int *data) {
-    for(int i = 0; i < 8; i++) {
-        int start_pos = i*8;
-        printf("%3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d\n",
-               data[start_pos],
-               data[start_pos+1],
-               data[start_pos+2],
-               data[start_pos+3],
-               data[start_pos+4],
-               data[start_pos+5],
-               data[start_pos+6],
-               data[start_pos+7]);
-    }
-    printf("\n\n");
-}
-
-void print_block_f(float *data) {
-    for(int i = 0; i < 8; i++) {
-        int start_pos = i*8;
-        printf("%3.2f  %3.2f  %3.2f  %3.2f  %3.2f  %3.2f  %3.2f  %3.2f\n",
-               data[start_pos],
-               data[start_pos+1],
-               data[start_pos+2],
-               data[start_pos+3],
-               data[start_pos+4],
-               data[start_pos+5],
-               data[start_pos+6],
-               data[start_pos+7]);
-    }
-    printf("\n\n");
-}
-
 void encode_du(HUFCODEC *hfcac, HUFCODEC *hfcdc, int du[64], int *dc);
 
 int main() {
-
-    // JPEG 指定压缩质量 1~99
-//    int quality_scale = 1;
 
     // 0. 准备 RGB 数据
     int width = 80, height = 80;
@@ -95,16 +29,6 @@ int main() {
     uint8_t yuv_u[width*height];
     uint8_t yuv_v[width*height];
     rgb24ToYuv(rgb24Data, yuv_y, yuv_u, yuv_v, width, height);
-
-//    FILE *y_file = fopen("/Users/hubin/Desktop/yuv_y", "wb");
-//    FILE *u_file = fopen("/Users/hubin/Desktop/yuv_u", "wb");
-//    FILE *v_file = fopen("/Users/hubin/Desktop/yuv_v", "wb");
-//    fwrite(yuv_y, 1, sizeof(yuv_y), y_file);
-//    fwrite(yuv_u, 1, sizeof(yuv_u), u_file);
-//    fwrite(yuv_v, 1, sizeof(yuv_v), v_file);
-//    fclose(y_file);
-//    fclose(u_file);
-//    fclose(v_file);
 
     // 2. 采样
     // 在 1. 颜色模式转换 生成了 yuv_y yuv_u yuv_v 三个分量，等于 YUV444 采样
@@ -146,6 +70,8 @@ int main() {
     }
 
     // 5. 量化
+    // JPEG 指定压缩质量 1~99
+    // int quality_scale = 1;
     int *pqtab[2];
     pqtab[0] = malloc(64*sizeof(int));
     pqtab[1] = malloc(64*sizeof(int));
@@ -171,7 +97,6 @@ int main() {
     for(int v_index = 0; v_index < block_size; v_index++) {
         zigzag_encode(v_blocks_dct[v_index]);
     }
-
 
     int   dc[3]= {0};
     char *buffer = malloc(width*height*2);
@@ -204,8 +129,10 @@ int main() {
     long dataLength = bitstr_tell(bs);
     printf("result = %ld", dataLength);
 
-    FILE *fp = fopen("C:\\Users\\Administrator\\Desktop\\rainbow-rgb-to-jpeg.jpg", "wb+");
-    // FILE *fp = fopen("/Users/hubin/Desktop/rainbow-rgb-to-jpeg.jpg", "wb");
+
+    // 下面开始将数据写入文件
+    //FILE *fp = fopen("C:\\Users\\Administrator\\Desktop\\rainbow-rgb-to-jpeg.jpg", "wb+");
+    FILE *fp = fopen("/Users/hubin/Desktop/rainbow-rgb-to-jpeg.jpg", "wb");
 
     // output SOI
     fputc(0xff, fp);
@@ -298,20 +225,19 @@ int main() {
     fflush(fp);
     fclose(fp);
 
-//    // close huffman codec
-//    huffman_encode_done(phcac[0]);
-//    huffman_encode_done(phcac[1]);
-//    huffman_encode_done(phcdc[0]);
-//    huffman_encode_done(phcdc[1]);
-//    jfif->datalen = bitstr_tell(bs);
-//
-//    // close bit stream
-//    bitstr_close(bs);
+    // 释放；释放；
+    free(pqtab[0]);
+    free(pqtab[1]);
+    free(buffer);
+    // close huffman codec
+    huffman_encode_done(phcac[0]);
+    huffman_encode_done(phcac[1]);
+    huffman_encode_done(phcdc[0]);
+    huffman_encode_done(phcdc[1]);
+    // close bit stream
+    bitstr_close(bs);
     return 0;
 }
-
-#define DU_TYPE_LUMIN  0
-#define DU_TYPE_CHROM  1
 
 typedef struct {
     unsigned runlen   : 4;
