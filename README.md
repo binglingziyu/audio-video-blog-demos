@@ -25,3 +25,7 @@
 [音视频入门-12-手动生成一张PNG图片](https://www.ihubin.com/blog/audio-video-basic-12-generate-png-by-hand/)
 
 [音视频入门-13-使用开源库生成PNG图片](https://www.ihubin.com/blog/audio-video-basic-13-generate-png-with-library/)
+
+[音视频入门-14-JPEG文件格式详解](https://www.ihubin.com/blog/audio-video-basic-14-jpeg-file-format-detail/)
+
+[音视频入门-15-手动生成一张JPEG图片](https://www.ihubin.com/blog/audio-video-basic-15-generate-jpeg-by-hand)
