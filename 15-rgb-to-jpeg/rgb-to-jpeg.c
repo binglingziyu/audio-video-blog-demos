@@ -123,8 +123,13 @@ int main() {
     phcac[1]->output = bs; huffman_encode_init(phcac[1], 1);
     phcdc[0]->output = bs; huffman_encode_init(phcdc[0], 1);
     phcdc[1]->output = bs; huffman_encode_init(phcdc[1], 1);
-    // 7. DC 系数的差分脉冲调制编码
 
+    // 7.  DC 系数的差分脉冲调制编码
+    // 8.  DC 系数的中间格式计算
+    // 9.  AC 系数的游程长度编码
+    // 10. AC 系数的中间格式计算
+    // 11. 熵编码
+    // 7、8、9、10、11 在 encode_du 里完成
     for(int index = 0; index < block_size; index++) {
         encode_du(phcac[0], phcdc[0], y_blocks_dct[index], &(dc[0]));
         encode_du(phcac[1], phcdc[1], u_blocks_dct[index], &(dc[1]));
@@ -266,24 +271,30 @@ void encode_du(HUFCODEC *hfcac, HUFCODEC *hfcdc, int du[64], int *dc) {
     RLEITEM   rlelist[63];
     int       i, j, n, eob;
 
+    // 7.  DC 系数的差分脉冲调制编码
     // dc
     diff = du[0] - *dc;
     *dc  = du[0];
 
+    // 8.  DC 系数的中间格式计算
     // category encode for dc
     code = diff;
     category_encode(&code, &size);
 
+    // 11. 熵编码 DC
     // huffman encode for dc
     huffman_encode_step(hfcdc, size);
     bitstr_put_bits(bs, code, size);
 
+    // 9.  AC 系数的游程长度编码
+    // 10. AC 系数的中间格式计算
     // rle encode for ac
     for (i=1, j=0, n=0, eob=0; i<64 && j<63; i++) {
         if (du[i] == 0 && n < 15) {
             n++;
         } else {
             code = du[i]; size = 0;
+            // 10. AC 系数的中间格式计算
             category_encode(&code, &size);
             rlelist[j].runlen   = n;
             rlelist[j].codesize = size;
@@ -302,6 +313,7 @@ void encode_du(HUFCODEC *hfcac, HUFCODEC *hfcdc, int du[64], int *dc) {
         j = eob + 1;
     }
 
+    // 11. 熵编码 AC
     // huffman encode for ac
     for (i=0; i<j; i++) {
         huffman_encode_step(hfcac, (rlelist[i].runlen << 4) | (rlelist[i].codesize << 0));
