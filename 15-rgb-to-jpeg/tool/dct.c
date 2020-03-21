@@ -3,7 +3,7 @@
 #include "math.h"
 #include "dct.h"
 
-#if 0 /* 快速的整数运算版本 */
+#if 1 /* 快速的整数运算版本 */
 /* 内部常量定义 */
 #define DCTSIZE  8
 
@@ -751,7 +751,7 @@ void idct2d8x8(float *data)
 }
 #endif
 
-#if 1 /* 数学表达式版本 */
+#if 0 /* 数学表达式版本 */
 /* 内部常量定义 */
 #define M_PI  3.14159265358979323846f
 

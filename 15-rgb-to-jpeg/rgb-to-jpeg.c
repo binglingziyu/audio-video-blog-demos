@@ -43,7 +43,7 @@ int main() {
     block_data_8x8(yuv_v, v_blocks, width, height);
 
     // 4. 离散余弦变换（DCT）
-//    init_dct_module();
+    init_dct_module();
     int y_blocks_dct[block_size][64];
     int u_blocks_dct[block_size][64];
     int v_blocks_dct[block_size][64];
@@ -52,8 +52,11 @@ int main() {
         // if(y_index == 0) print_block_u(y_blocks[y_index]);
         // DCT 之前减去 128
         for(int i = 0; i < 64; i++) {y_blocks_dct[y_index][i] = y_block[i]-128;}
+        for(int i = 0; i < 64; i++) {
+            y_blocks_dct[y_index][i] = y_blocks_dct[y_index][i] << 2;
+        }
         // if(y_index == 0) print_block_i(y_blocks_dct[y_index]);
-        fdct2d8x8(y_blocks_dct[y_index]);
+        fdct2d8x8(y_blocks_dct[y_index], NULL);
 //        for (int i=0; i<64; i++) data[i] /= dctfactor[i];
 //        for (i=0; i<64; i++) data[i] /= 8.0f;
         // fdct(y_blocks_dct[y_index]);
@@ -63,14 +66,20 @@ int main() {
         uint8_t *u_block = u_blocks[u_index];
         // DCT 之前减去 128
         for(int i = 0; i < 64; i++) {u_blocks_dct[u_index][i] = u_block[i] - 128;}
-        fdct2d8x8(u_blocks_dct[u_index]);
+        for(int i = 0; i < 64; i++) {
+            u_blocks_dct[u_index][i] = u_blocks_dct[u_index][i] << 2;
+        }
+        fdct2d8x8(u_blocks_dct[u_index], NULL);
         //fdct(u_blocks_dct[u_index]);
     }
     for(int v_index = 0; v_index < block_size; v_index++) {
         uint8_t *v_block = v_blocks[v_index];
         // DCT 之前减去 128
         for(int i = 0; i < 64; i++) {v_blocks_dct[v_index][i] = v_block[i] - 128;}
-        fdct2d8x8(v_blocks_dct[v_index]);
+        for(int i = 0; i < 64; i++) {
+            v_blocks_dct[v_index][i] = v_blocks_dct[v_index][i] << 2;
+        }
+        fdct2d8x8(v_blocks_dct[v_index], NULL);
         //fdct(v_blocks_dct[v_index]);
     }
 
