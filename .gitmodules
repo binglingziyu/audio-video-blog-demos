@@ -23,3 +23,6 @@
 [submodule "3rd/libpng"]
 	path = 3rd/libpng
 	url = git@github.com:glennrp/libpng.git
+[submodule "3rd/libjpeg-turbo"]
+	path = 3rd/libjpeg-turbo
+	url = git@github.com:libjpeg-turbo/libjpeg-turbo.git
