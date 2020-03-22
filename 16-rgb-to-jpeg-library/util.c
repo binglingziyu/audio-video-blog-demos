@@ -18,19 +18,19 @@ void genRGB24Data(uint8_t *rgbData, int width, int height) {
     for (int i = 0; i < width; ++i) {
         // 当前颜色
         uint32_t currentColor = rainbowColors[0];
-        if(i < 10) {
+        if(i < 100) {
             currentColor = rainbowColors[0];
-        } else if(i < 20) {
+        } else if(i < 200) {
             currentColor = rainbowColors[1];
-        } else if(i < 30) {
+        } else if(i < 300) {
             currentColor = rainbowColors[2];
-        } else if(i < 40) {
+        } else if(i < 400) {
             currentColor = rainbowColors[3];
-        } else if(i < 50) {
+        } else if(i < 500) {
             currentColor = rainbowColors[4];
-        } else if(i < 60) {
+        } else if(i < 600) {
             currentColor = rainbowColors[5];
-        } else if(i < 70) {
+        } else if(i < 700) {
             currentColor = rainbowColors[6];
         }
         // 当前颜色 R 分量
