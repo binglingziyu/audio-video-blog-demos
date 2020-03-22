@@ -29,3 +29,5 @@
 [音视频入门-14-JPEG文件格式详解](https://www.ihubin.com/blog/audio-video-basic-14-jpeg-file-format-detail/)
 
 [音视频入门-15-手动生成一张JPEG图片](https://www.ihubin.com/blog/audio-video-basic-15-generate-jpeg-by-hand)
+
+[音视频入门-16-使用libjpeg-trubo处理JPEG图片](https://www.ihubin.com/blog/audio-video-basic-16-libjpeg-turbo-handle-jpeg)
