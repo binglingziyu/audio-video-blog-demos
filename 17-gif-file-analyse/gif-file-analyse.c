@@ -5,7 +5,7 @@
 #include "stdlib.h"
 #include "lzw/src/lzw.h"
 
-// 彩虹的七种颜色
+// 颜色表
 uint32_t rainbowColors[] = {
         0XFF0000, // 赤
         0X00FF00, // 绿
@@ -13,7 +13,8 @@ uint32_t rainbowColors[] = {
         0XFFFF00, // 黄
         0X0000FF, // 蓝
         0X007FFF, // 青
-        0X8B00FF  // 紫
+        0X8B00FF, // 紫
+        0X000000  // 黑
 
 //        0XFF0000, // 赤
 //        0XFFA500, // 橙
@@ -25,10 +26,15 @@ uint32_t rainbowColors[] = {
 };
 
 int main () {
+    // LZW 编码初始表大小的位数：3
     unsigned char code_size = 3;
+    //  GIF 一帧图像的数据压缩文件（rainbow-compressed.gif.frame）大小
     long total_bytes;
+    // GIF 一帧图像的数据压缩数据
     unsigned char *img_compressed;
+    // GIF 一帧图像的数据解压后的数据
     unsigned char *img;
+    //  GIF 一帧图像的数据解压后大小
     unsigned long decompressed_size;
 
     FILE *gif_compressed_frame = fopen("/Users/hubin/Desktop/rainbow-compressed.gif.frame", "rb+");
@@ -40,6 +46,7 @@ int main () {
     img_compressed = malloc((unsigned long) total_bytes);
     fread(img_compressed, total_bytes, 1, gif_compressed_frame);
 
+    // 进行 LZW 解压
     lzw_decompress(
         code_size,
         total_bytes,
@@ -56,7 +63,9 @@ int main () {
 
     FILE *gif_frame_rgb = fopen("/Users/hubin/Desktop/rainbow-decompressed.gif.frame.rgb", "wb+");
     for(int i = 0; i < decompressed_size; i++) {
+        // 颜色索引值
         unsigned char color_index = img[i];
+        // 根据颜色索引取出颜色表中的颜色
         uint32_t color_rgb = rainbowColors[color_index];
         // 当前颜色 R 分量
         uint8_t R = (color_rgb & 0xFF0000) >> 16;
