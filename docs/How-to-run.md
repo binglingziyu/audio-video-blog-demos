@@ -1,11 +1,19 @@
 
-# 
+# 打开 & 运行命令（Open & Run）
+
+## 方式一
+
+CLion -> Get From VCS
+
+## 方式二
 
 ```shell script
-git clone git@github.com:binglingziyu/audio-video-blog-demos.git
+> git clone git@github.com:binglingziyu/audio-video-blog-demos.git
+> cd audio-video-blog-demos
+> git submodule init
+> git submodule update
 
-git submodule init
-git submodule update
+Open with CLion
 ```
 
 
