@@ -1,3 +1,11 @@
+# 运行
+
+```shell
+git clone git@github.com:binglingziyu/audio-video-blog-demos.git
+
+open with CLion
+```
+
 # 目录
 
 [音视频入门-01-认识 RGB](https://www.ihubin.com/blog/audio-video-basic-01-rgb-intro/)
@@ -31,3 +39,7 @@
 [音视频入门-15-手动生成一张JPEG图片](https://www.ihubin.com/blog/audio-video-basic-15-generate-jpeg-by-hand)
 
 [音视频入门-16-使用libjpeg-trubo处理JPEG图片](https://www.ihubin.com/blog/audio-video-basic-16-libjpeg-turbo-handle-jpeg)
+
+[音视频入门-17-GIF文件格式详解](https://www.ihubin.com/blog/audio-video-basic-17-gif-file-format-detail/)
+
+[音视频入门-18-手动生成一张GIF图片](https://www.ihubin.com/blog/audio-video-basic-18-generate-gif-by-hand/)

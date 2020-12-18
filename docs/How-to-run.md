@@ -4,14 +4,9 @@
 ```shell script
 git clone git@github.com:binglingziyu/audio-video-blog-demos.git
 
-
 git submodule init
 git submodule update
-
-cp 3rd/lodepng/lodepng.cpp 3rd/lodepng/lodepng.c
 ```
-
-
 
 
 
