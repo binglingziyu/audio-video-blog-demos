@@ -9,10 +9,12 @@ set(LIBATTOPNG_SRC ../3rd/libattopng/libattopng.c ../00-examples/array-example.c
 include_directories(../3rd/libattopng)
 add_executable(13-rgb-to-png-with-libattopng rgb-to-png-with-libattopng.c ${LIBATTOPNG_SRC})
 
-
 #aux_source_directory(../3rd/lodepng LODEPNG_SRC)
 #list(REMOVE_ITEM LODEPNG_SRC "../3rd/lodepng/lodepng_benchmark.cpp")
 # lodepng Demo (lodepng.cpp rename to lodepng.c)
+#file(COPY ${CMAKE_SOURCE_DIR}/3rd/lodepng/lodepng.cpp
+#        DESTINATION ${CMAKE_SOURCE_DIR}/3rd/lodepng/)
+configure_file(${CMAKE_SOURCE_DIR}/3rd/lodepng/lodepng.cpp ${CMAKE_SOURCE_DIR}/3rd/lodepng/lodepng.c COPYONLY)
 set(LODEPNG_SRC ../3rd/lodepng/lodepng.c)
 include_directories(../3rd/lodepng)
 add_executable(13-rgb-to-png-with-lodepng rgb-to-png-with-lodepng.c ${LODEPNG_SRC})
