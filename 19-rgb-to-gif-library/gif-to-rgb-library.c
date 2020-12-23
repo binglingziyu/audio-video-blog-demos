@@ -21,7 +21,7 @@
 /******************************************************************************
  The real screen dumping routine.
 ******************************************************************************/
-static void DumpScreen2RGB(char *FileName, int OneFileFlag,
+static void DumpScreen2RGB(char *FileName,
                            ColorMapObject *ColorMap,
                            GifRowType *ScreenBuffer,
                            int ScreenWidth, int ScreenHeight)
@@ -32,25 +32,9 @@ static void DumpScreen2RGB(char *FileName, int OneFileFlag,
     FILE *rgbfp[3];
 
     if (FileName != NULL) {
-        if (OneFileFlag) {
-            if ((rgbfp[0] = fopen(FileName, "a+")) == NULL)
-            GIF_EXIT("Can't open input file name.");
-        } else {
-            static char *Postfixes[] = { ".R", ".G", ".B" };
-            char OneFileName[80];
-
-            for (i = 0; i < 3; i++) {
-                strncpy(OneFileName, FileName, sizeof(OneFileName)-1);
-                strncat(OneFileName, Postfixes[i],
-                        sizeof(OneFileName) - 1 - strlen(OneFileName));
-
-                if ((rgbfp[i] = fopen(OneFileName, "wb")) == NULL) {
-                    GIF_EXIT("Can't open input file name.");
-                }
-            }
-        }
+        if ((rgbfp[0] = fopen(FileName, "a+")) == NULL)
+        GIF_EXIT("Can't open input file name.");
     } else {
-        OneFileFlag = true;
 
 #ifdef _WIN32
         _setmode(1, O_BINARY);
@@ -64,63 +48,31 @@ static void DumpScreen2RGB(char *FileName, int OneFileFlag,
         exit(EXIT_FAILURE);
     }
 
-    if (OneFileFlag) {
-        unsigned char *Buffer, *BufferP;
+    unsigned char *Buffer, *BufferP;
 
-        if ((Buffer = (unsigned char *) malloc(ScreenWidth * 3)) == NULL)
-        GIF_EXIT("Failed to allocate memory required, aborted.");
-        for(int k = 0; k < 1; k++) {
-            for (i = 0; i < ScreenHeight; i++) {
-                GifRow = ScreenBuffer[i];
-                GifQprintf("\b\b\b\b%-4d", ScreenHeight - i);
-                for (j = 0, BufferP = Buffer; j < ScreenWidth; j++) {
-                    ColorMapEntry = &ColorMap->Colors[GifRow[j]];
-                    *BufferP++ = ColorMapEntry->Red;
-                    *BufferP++ = ColorMapEntry->Green;
-                    *BufferP++ = ColorMapEntry->Blue;
-                }
-                if (fwrite(Buffer, ScreenWidth * 3, 1, rgbfp[0]) != 1)
-                GIF_EXIT("Write to file(s) failed.");
-            }
-        }
-
-        free((char *) Buffer);
-        fclose(rgbfp[0]);
-    } else {
-        unsigned char *Buffers[3];
-
-        if ((Buffers[0] = (unsigned char *) malloc(ScreenWidth)) == NULL ||
-            (Buffers[1] = (unsigned char *) malloc(ScreenWidth)) == NULL ||
-            (Buffers[2] = (unsigned char *) malloc(ScreenWidth)) == NULL)
-        GIF_EXIT("Failed to allocate memory required, aborted.");
-
+    if ((Buffer = (unsigned char *) malloc(ScreenWidth * 3)) == NULL)
+    GIF_EXIT("Failed to allocate memory required, aborted.");
+    for(int k = 0; k < 1; k++) {
         for (i = 0; i < ScreenHeight; i++) {
             GifRow = ScreenBuffer[i];
             GifQprintf("\b\b\b\b%-4d", ScreenHeight - i);
-            for (j = 0; j < ScreenWidth; j++) {
+            for (j = 0, BufferP = Buffer; j < ScreenWidth; j++) {
                 ColorMapEntry = &ColorMap->Colors[GifRow[j]];
-                Buffers[0][j] = ColorMapEntry->Red;
-                Buffers[1][j] = ColorMapEntry->Green;
-                Buffers[2][j] = ColorMapEntry->Blue;
+                *BufferP++ = ColorMapEntry->Red;
+                *BufferP++ = ColorMapEntry->Green;
+                *BufferP++ = ColorMapEntry->Blue;
             }
-            if (fwrite(Buffers[0], ScreenWidth, 1, rgbfp[0]) != 1 ||
-                fwrite(Buffers[1], ScreenWidth, 1, rgbfp[1]) != 1 ||
-                fwrite(Buffers[2], ScreenWidth, 1, rgbfp[2]) != 1)
+            if (fwrite(Buffer, ScreenWidth * 3, 1, rgbfp[0]) != 1)
             GIF_EXIT("Write to file(s) failed.");
         }
-
-        free((char *) Buffers[0]);
-        free((char *) Buffers[1]);
-        free((char *) Buffers[2]);
-        fclose(rgbfp[0]);
-        fclose(rgbfp[1]);
-        fclose(rgbfp[2]);
     }
+
+    free((char *) Buffer);
+    fclose(rgbfp[0]);
+
 }
 
-static void GIF2RGB(int NumFiles, char *FileName,
-                    bool OneFileFlag,
-                    char *OutFileName)
+static void GIF2RGB( char *FileName, char *OutFileName)
 {
     int	i, j, Size, Row, Col, Width, Height, ExtCode, Count;
     GifRecordType RecordType;
@@ -134,20 +86,9 @@ static void GIF2RGB(int NumFiles, char *FileName,
     ColorMapObject *ColorMap;
     int Error;
 
-    if (NumFiles == 1) {
-        int Error;
-        if ((GifFile = DGifOpenFileName(FileName, &Error)) == NULL) {
-            PrintGifError(Error);
-            exit(EXIT_FAILURE);
-        }
-    }
-    else {
-        int Error;
-        /* Use stdin instead: */
-        if ((GifFile = DGifOpenFileHandle(0, &Error)) == NULL) {
-            PrintGifError(Error);
-            exit(EXIT_FAILURE);
-        }
+    if ((GifFile = DGifOpenFileName(FileName, &Error)) == NULL) {
+        PrintGifError(Error);
+        exit(EXIT_FAILURE);
     }
 
     if (GifFile->SHeight == 0 || GifFile->SWidth == 0) {
@@ -241,16 +182,16 @@ static void GIF2RGB(int NumFiles, char *FileName,
                     exit(EXIT_FAILURE);
                 }
 
-//                char *name = malloc(255*sizeof(char));
-//                char *n1 = "/Users/apple/Desktop/rainbow";
-//                char *n2 = ".rgb";
-//                sprintf(name, "%s-%d%s", n1, screenIndex++, n2);
-//                printf("Final File Name: %s\n", name);
+                char *name = malloc(255*sizeof(char));
+                char *n1 = "/Users/apple/Desktop/rainbow";
+                char *n2 = ".rgb";
+                sprintf(name, "%s-%d%s", n1, screenIndex++, n2);
+                printf("Final File Name: %s\n", name);
 
-//                DumpScreen2RGB(OutFileName, OneFileFlag,
-//                               ColorMap,
-//                               ScreenBuffer,
-//                               GifFile->SWidth, GifFile->SHeight);
+                DumpScreen2RGB(name,
+                               ColorMap,
+                               ScreenBuffer,
+                               GifFile->SWidth, GifFile->SHeight);
                 break;
             case EXTENSION_RECORD_TYPE:
                 /* Skip any extension blocks in file: */
@@ -272,11 +213,11 @@ static void GIF2RGB(int NumFiles, char *FileName,
         }
     } while (RecordType != TERMINATE_RECORD_TYPE);
 
-    char* name = "/Users/apple/Desktop/rainbow0.rgb";
-    DumpScreen2RGB(name, OneFileFlag,
-                   ColorMap,
-                   ScreenBuffer,
-                   GifFile->SWidth, GifFile->SHeight);
+//    char* name = "/Users/apple/Desktop/rainbow0.rgb";
+//    DumpScreen2RGB(name,
+//                   ColorMap,
+//                   ScreenBuffer,
+//                   GifFile->SWidth, GifFile->SHeight);
 
     (void)free(ScreenBuffer);
 
@@ -289,7 +230,12 @@ static void GIF2RGB(int NumFiles, char *FileName,
 
 
 int main(int argc, char **argv) {
-    GIF2RGB(1, "/Users/apple/Desktop/rainbow.gif", true, "/Users/apple/Desktop/rainbow.rgb");
+    printf("参数个数：%d\n", argc);
+    for(int i = 0; i < argc; i++) {
+        printf("参数打印：%s\n", argv[i]);
+    }
+
+    GIF2RGB( "/Users/apple/Desktop/rainbow.gif", "/Users/apple/Desktop/rainbow.rgb");
     return 0;
 }
 
