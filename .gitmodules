@@ -26,3 +26,7 @@
 [submodule "3rd/libjpeg-turbo"]
 	path = 3rd/libjpeg-turbo
 	url = git@github.com:libjpeg-turbo/libjpeg-turbo.git
+[submodule "3rd/giflib"]
+	path = 3rd/giflib
+	url = git@github.com:Mirrors-srorriM/giflib.git
+	branch = 5.2.1
