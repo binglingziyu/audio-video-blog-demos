@@ -105,13 +105,12 @@ int decodePNG(char *filename, unsigned char **pngRGB) {
     png_read_image(png, row_pointers);
 
     *pngRGB = malloc(width*height*3);
+    int counter = 0;
     for(int i = 0; i < height; i++) {
         if(color_type == 6) { // 带有透明 RGBA
             for(int j = 0; j < rowByteCount; j+=4) {
-//                *pngRGB[i*width*3+j] = row_pointers[i][j];
-//                *pngRGB[i*width*3+j+1] = row_pointers[i][j+1];
-//                *pngRGB[i*width*3+j+2] = row_pointers[i][j+2];
-                memcpy(*pngRGB+i*width*3 + 3*j, row_pointers[i], 3);
+                memcpy(*pngRGB+counter, row_pointers[i]+j, 3);
+                counter+=3;
             }
         } else {
             memcpy(*pngRGB+rowByteCount, row_pointers[i], rowByteCount);
