@@ -2,10 +2,14 @@ cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_C_STANDARD 99)
 
-set(GOOGLE_LIBBMP
-        ${CMAKE_SOURCE_DIR}/05-rgb-to-bmp-library/google/libbmp/src/bmpfile.c
+#set(QDBMP_SRC
+#        ${CMAKE_SOURCE_DIR}/05-rgb-to-bmp-library/qdbmp/qdbmp.c
+#)
+#include_directories(${CMAKE_SOURCE_DIR}/05-rgb-to-bmp-library/qdbmp)
+set(LIBBMP_SRC
+        ${CMAKE_SOURCE_DIR}/05-rgb-to-bmp-library/libbmp/libbmp.c
 )
-include_directories(${CMAKE_SOURCE_DIR}/05-rgb-to-bmp-library/google/libbmp/src)
+include_directories(${CMAKE_SOURCE_DIR}/05-rgb-to-bmp-library/libbmp)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/3rd/zlib ZLIB_SRC)
 include_directories(${CMAKE_SOURCE_DIR}/3rd/zlib)
@@ -35,8 +39,7 @@ set(GIFLIB_SRC
         )
 include_directories(${CMAKE_SOURCE_DIR}/3rd/giflib)
 
-#add_executable(20-image-to-gif image-to-gif.c ${GOOGLE_LIBBMP} ${LIBPNG_SRC} ${GIFLIB_SRC})
-add_executable(20-image-to-gif image-to-gif.c ${GOOGLE_LIBBMP} ${ZLIB_SRC} ${LIBPNG_SRC} ${GIFLIB_SRC})
+add_executable(20-image-to-gif image-to-gif.c ${LIBBMP_SRC} ${ZLIB_SRC} ${LIBPNG_SRC} ${GIFLIB_SRC})
 
 # 添加链接库
 target_link_libraries(20-image-to-gif libturbojpeg.dylib)
