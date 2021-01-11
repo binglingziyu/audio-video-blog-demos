@@ -18,13 +18,6 @@
 
 #define PROGRAM_NAME	"rgb2gif"
 
-
-static void LoadRGB(char *FileName,
-                    GifByteType **RedBuffer,
-                    GifByteType **GreenBuffer,
-                    GifByteType **BlueBuffer,
-                    int Width, int Height);
-
 /******************************************************************************
  Load RGB file into internal frame buffer.
 ******************************************************************************/
@@ -99,12 +92,6 @@ static void RGB2GIF(char **RGBFileNames, int NumOfRGBFile, char *GIFFileName,
         exit(EXIT_FAILURE);
     }
 
-//    ColorMapSize = 1 << ExpNumOfColors;
-//    OutputColorMap = GifMakeMapObject(ColorMapSize, NULL);
-//    GifColorType *colors = malloc(ColorMapSize * sizeof(GifColorType));
-//    colors[0] = ;
-//    OutputColorMap->Colors = colors;
-
     GifFile->SWidth = Width;
     GifFile->SHeight = Height;
     GifFile->SColorResolution = 1;
@@ -160,16 +147,16 @@ static void RGB2GIF(char **RGBFileNames, int NumOfRGBFile, char *GIFFileName,
 
 int main(int argc, char **argv) {
     char *rgbFiles[] = {
-            "/Users/apple/Desktop/rainbow-0.rgb",
-            "/Users/apple/Desktop/rainbow-1.rgb",
-            "/Users/apple/Desktop/rainbow-2.rgb",
-            "/Users/apple/Desktop/rainbow-3.rgb",
-            "/Users/apple/Desktop/rainbow-4.rgb",
-            "/Users/apple/Desktop/rainbow-5.rgb",
-            "/Users/apple/Desktop/rainbow-6.rgb",
+            "/Users/hubin/Desktop/rainbow-0.rgb",
+            "/Users/hubin/Desktop/rainbow-1.rgb",
+            "/Users/hubin/Desktop/rainbow-2.rgb",
+            "/Users/hubin/Desktop/rainbow-3.rgb",
+            "/Users/hubin/Desktop/rainbow-4.rgb",
+            "/Users/hubin/Desktop/rainbow-5.rgb",
+            "/Users/hubin/Desktop/rainbow-6.rgb",
     };
 
-    RGB2GIF(rgbFiles, 7, "/Users/apple/Desktop/rainbow0.gif", 3, 700, 700);
+    RGB2GIF(rgbFiles, 7, "/Users/hubin/Desktop/rainbow0.gif", 3, 700, 700);
     return 0;
 }
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(image-demo-rgb-pixel)
+project(audio-video-blog-demos)
 
 message(${CMAKE_SOURCE_DIR})
 
@@ -22,3 +22,4 @@ add_subdirectory(16-rgb-to-jpeg-library)
 add_subdirectory(17-gif-file-analyse)
 add_subdirectory(18-rgb-to-gif)
 add_subdirectory(19-rgb-to-gif-library)
+add_subdirectory(20-image-to-gif)
