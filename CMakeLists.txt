@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(image-demo-rgb-pixel)
+project(audio-video-blog-demos)
 
 message(${CMAKE_SOURCE_DIR})
 

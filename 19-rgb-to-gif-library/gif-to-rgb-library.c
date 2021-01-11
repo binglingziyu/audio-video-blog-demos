@@ -72,7 +72,7 @@ static void DumpScreen2RGB(char *FileName,
 
 }
 
-static void GIF2RGB( char *FileName, char *OutFileName)
+static void GIF2RGB( char *FileName, char *OutFileNamePattern)
 {
     int	i, j, Size, Row, Col, Width, Height, ExtCode, Count;
     GifRecordType RecordType;
@@ -183,9 +183,7 @@ static void GIF2RGB( char *FileName, char *OutFileName)
                 }
 
                 char *name = malloc(255*sizeof(char));
-                char *n1 = "/Users/apple/Desktop/rainbow";
-                char *n2 = ".rgb";
-                sprintf(name, "%s-%d%s", n1, screenIndex++, n2);
+                sprintf(name, OutFileNamePattern,  screenIndex++);
                 printf("Final File Name: %s\n", name);
 
                 DumpScreen2RGB(name,
@@ -213,12 +211,6 @@ static void GIF2RGB( char *FileName, char *OutFileName)
         }
     } while (RecordType != TERMINATE_RECORD_TYPE);
 
-//    char* name = "/Users/apple/Desktop/rainbow0.rgb";
-//    DumpScreen2RGB(name,
-//                   ColorMap,
-//                   ScreenBuffer,
-//                   GifFile->SWidth, GifFile->SHeight);
-
     (void)free(ScreenBuffer);
 
     if (DGifCloseFile(GifFile, &Error) == GIF_ERROR) {
@@ -228,14 +220,8 @@ static void GIF2RGB( char *FileName, char *OutFileName)
 
 }
 
-
 int main(int argc, char **argv) {
-    printf("参数个数：%d\n", argc);
-    for(int i = 0; i < argc; i++) {
-        printf("参数打印：%s\n", argv[i]);
-    }
-
-    GIF2RGB( "/Users/apple/Desktop/rainbow.gif", "/Users/apple/Desktop/rainbow.rgb");
+    GIF2RGB( "/Users/hubin/Desktop/rainbow.gif", "/Users/hubin/Desktop/rainbow-%d.rgb");
     return 0;
 }
 
