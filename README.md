@@ -55,3 +55,5 @@ Open with CLion
 [音视频入门-18-手动生成一张GIF图片](https://www.ihubin.com/blog/audio-video-basic-18-generate-gif-by-hand/)
 
 [音视频入门-19-使用giflib处理GIF图片](https://www.ihubin.com/blog/audio-video-basic-19-giflib-handle-gif/)
+
+[音视频入门-20-BMP、PNG、JPG、GIF静态图生成GIF动态图](https://www.ihubin.com/blog/audio-video-basic-20-static-image-to-animated-image)

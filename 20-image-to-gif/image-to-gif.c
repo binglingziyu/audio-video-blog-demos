@@ -7,7 +7,6 @@
 #include <strings.h>
 #include "libbmp.h"
 #include "png.h"
-#include "turbojpeg.h"
 #include "jpeglib.h"
 #include "gif_lib.h"
 #include "getarg.h"
@@ -18,6 +17,8 @@ int decodeJPG(char *, unsigned char **);
 int decodeGIF(char *, unsigned char **);
 int encodeGIF(unsigned char **RGBBuffers, int NumOfRGBBuffer, char *GIFFileName,
               int ExpNumOfColors, int Width, int Height);
+int AppendExtension(const ExtensionBlock *ExtensionBlock,
+                    GifFileType *GifFile, int ImageIndex);
 
 // https://gist.github.com/niw/5963798
 int main() {
@@ -68,7 +69,7 @@ int main() {
     rgbBuffers[1] = pngRGB;
     rgbBuffers[2] = jpgRGB;
     rgbBuffers[3] = gifRGB;
-    encodeGIF(rgbBuffers, 4, "/Users/hubin/Desktop/blog-20/image-to-gif.gif",
+    encodeGIF(rgbBuffers, 4, "/Users/hubin/Desktop/image-to-gif.gif",
               7, 400, 400);
 
 
@@ -505,6 +506,25 @@ int encodeGIF(unsigned char **RGBBuffers, int NumOfRGBBuffer, char *GIFFileName,
         image->ImageDesc = *imageDesc;
         image->RasterBits = OutputBuffer;
 
+//        // 添加 Application Extension 控制 GIF 循环
+//        if(i == 0) {
+//            printf("添加 Application Extension\n");
+//            uint8_t Extension[] = {0x4E, 0x45, 0x54, 0x53, 0x43, 0x41, 0x50, 0x45, 0x32, 0x2E, 0x30, 0x03, 0x01, 0x00, 0x00};
+//
+//            ExtensionBlock *ExtensionBlock = malloc(sizeof(ExtensionBlock));
+//            ExtensionBlock->Function = APPLICATION_EXT_FUNC_CODE;
+//            ExtensionBlock->ByteCount = 15;
+//            ExtensionBlock->Bytes = Extension;
+//
+//            if(AppendExtension(
+//                    ExtensionBlock,
+//                    GifFile,
+//                    i) == GIF_ERROR) {
+//                printf("添加 Application Extension 失败\n");
+//                return -1;
+//            }
+//        }
+
         GraphicsControlBlock *GCB = (GraphicsControlBlock *) malloc(sizeof(GraphicsControlBlock));
         GCB->DisposalMode = DISPOSAL_UNSPECIFIED;
         GCB->DelayTime = 100;
@@ -522,4 +542,22 @@ int encodeGIF(unsigned char **RGBBuffers, int NumOfRGBBuffer, char *GIFFileName,
     // 输出文件
     EGifSpew(GifFile);
     return 0;
+}
+
+int AppendExtension(const ExtensionBlock *ExtensionBlock,
+                            GifFileType *GifFile, int ImageIndex)
+{
+    GifByteType buf[sizeof(GraphicsControlBlock)]; /* a bit dodgy... */
+
+    if (ImageIndex < 0 || ImageIndex > GifFile->ImageCount - 1)
+        return GIF_ERROR;
+
+    if (GifAddExtensionBlock(&GifFile->SavedImages[ImageIndex].ExtensionBlockCount,
+                             &GifFile->SavedImages[ImageIndex].ExtensionBlocks,
+                             ExtensionBlock->Function,
+                             ExtensionBlock->ByteCount,
+                             ExtensionBlock->Bytes) == GIF_ERROR)
+        return (GIF_ERROR);
+
+    return (GIF_OK);
 }
